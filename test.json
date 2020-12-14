@@ -1,0 +1,1050 @@
+{
+    "$id": "http://example.com/example.json",
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "default": {},
+    "description": "The root schema comprises the entire JSON document.",
+    "examples": [
+        {
+            "content": "<html></html>",
+            "metrics": {
+                "Timestamp": 26398.791903,
+                "Documents": 3,
+                "Frames": 1,
+                "JSEventListeners": 150,
+                "Nodes": 350,
+                "LayoutCount": 8,
+                "RecalcStyleCount": 16,
+                "LayoutDuration": 0.026549,
+                "RecalcStyleDuration": 0.006875,
+                "ScriptDuration": 0.120876,
+                "TaskDuration": 0.258038,
+                "JSHeapUsedSize": 8164436,
+                "JSHeapTotalSize": 10776576
+            },
+            "headers": {
+                "status": "200",
+                "date": "Mon, 14 Dec 2020 00:23:26 GMT",
+                "expires": "-1",
+                "cache-control": "private, max-age=0",
+                "content-type": "text/html; charset=UTF-8",
+                "p3p": "CP=\"This is not a P3P policy! See g.co/p3phelp for more info.\"",
+                "content-encoding": "gzip",
+                "server": "gws",
+                "content-length": "66852",
+                "x-xss-protection": "0",
+                "x-frame-options": "SAMEORIGIN",
+                "set-cookie": "1P_JAR=2020-12-14-00; expires=Wed, 13-Jan-2021 00:23:26 GMT; path=/; domain=.google.com; Secure; SameSite=none\nNID=204=x8WnHfZR5wlLnUH1tKhuQGW8UmkncWoKpNDuoEXJBeCL0NGBhNPfJN98gMBB-Plj10c8B9AeauAor5DMzS6y24a7mw-33Phx_JeEKTRNbarLgAhEpXofHinIkZ0rIKN5C4FbopzKaUeXE-JUJaQMor-OoCmSVQk8lz7yJKRtK6Q; expires=Tue, 15-Jun-2021 00:23:26 GMT; path=/; domain=.google.com; HttpOnly",
+                "alt-svc": "h3-29=\":443\"; ma=2592000,h3-T051=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\""
+            },
+            "status": 200,
+            "title": "Google",
+            "metadata": {
+                "metatags": {
+                    "undefined": [
+                        null
+                    ],
+                    "image": [
+                        "/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.3-law.gif"
+                    ],
+                    "twitter:title": [
+                        "Fiestas de fin de año"
+                    ],
+                    "twitter:description": [
+                        "Felices fiestas 2020 #GoogleDoodle"
+                    ],
+                    "og:description": [
+                        "Felices fiestas 2020 #GoogleDoodle"
+                    ],
+                    "twitter:card": [
+                        "summary_large_image"
+                    ],
+                    "twitter:site": [
+                        "@GoogleDoodles"
+                    ],
+                    "twitter:image": [
+                        "https://www.google.com/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.3-2xa.gif"
+                    ],
+                    "og:image": [
+                        "https://www.google.com/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.3-2xa.gif"
+                    ],
+                    "og:image:width": [
+                        "1100"
+                    ],
+                    "og:image:height": [
+                        "440"
+                    ],
+                    "og:url": [
+                        "https://www.google.com/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.3-2xa.gif"
+                    ],
+                    "og:type": [
+                        "video.other"
+                    ]
+                },
+                "microdata": {
+                    "WebPage": [
+                        {
+                            "@context": "http://schema.org/",
+                            "@type": "WebPage",
+                            "image": "/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.3-law.gif"
+                        }
+                    ]
+                },
+                "rdfa": {},
+                "jsonld": {}
+            }
+        }
+    ],
+    "required": [
+        "content"
+    ],
+    "title": "The root schema",
+    "type": "object",
+    "properties": {
+        "content": {
+            "$id": "#/properties/content",
+            "default": "",
+            "description": "An explanation about the purpose of this instance.",
+            "examples": [
+                "<html></html>"
+            ],
+            "title": "The content schema",
+            "type": "string"
+        },
+        "metrics": {
+            "$id": "#/properties/metrics",
+            "default": {},
+            "description": "Metrics of the browser",
+            "examples": [
+                {
+                    "Timestamp": 26398.791903,
+                    "Documents": 3,
+                    "Frames": 1,
+                    "JSEventListeners": 150,
+                    "Nodes": 350,
+                    "LayoutCount": 8,
+                    "RecalcStyleCount": 16,
+                    "LayoutDuration": 0.026549,
+                    "RecalcStyleDuration": 0.006875,
+                    "ScriptDuration": 0.120876,
+                    "TaskDuration": 0.258038,
+                    "JSHeapUsedSize": 8164436,
+                    "JSHeapTotalSize": 10776576
+                }
+            ],
+            "title": "Page load metrics",
+            "type": "object",
+            "properties": {
+                "Timestamp": {
+                    "$id": "#/properties/metrics/properties/Timestamp",
+                    "type": "number",
+                    "title": "The Timestamp schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": 0.0,
+                    "examples": [
+                        26398.791903
+                    ]
+                },
+                "Documents": {
+                    "$id": "#/properties/metrics/properties/Documents",
+                    "type": "integer",
+                    "title": "The Documents schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": 0,
+                    "examples": [
+                        3
+                    ]
+                },
+                "Frames": {
+                    "$id": "#/properties/metrics/properties/Frames",
+                    "type": "integer",
+                    "title": "The Frames schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": 0,
+                    "examples": [
+                        1
+                    ]
+                },
+                "JSEventListeners": {
+                    "$id": "#/properties/metrics/properties/JSEventListeners",
+                    "type": "integer",
+                    "title": "The JSEventListeners schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": 0,
+                    "examples": [
+                        150
+                    ]
+                },
+                "Nodes": {
+                    "$id": "#/properties/metrics/properties/Nodes",
+                    "type": "integer",
+                    "title": "The Nodes schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": 0,
+                    "examples": [
+                        350
+                    ]
+                },
+                "LayoutCount": {
+                    "$id": "#/properties/metrics/properties/LayoutCount",
+                    "type": "integer",
+                    "title": "The LayoutCount schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": 0,
+                    "examples": [
+                        8
+                    ]
+                },
+                "RecalcStyleCount": {
+                    "$id": "#/properties/metrics/properties/RecalcStyleCount",
+                    "type": "integer",
+                    "title": "The RecalcStyleCount schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": 0,
+                    "examples": [
+                        16
+                    ]
+                },
+                "LayoutDuration": {
+                    "$id": "#/properties/metrics/properties/LayoutDuration",
+                    "type": "number",
+                    "title": "The LayoutDuration schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": 0.0,
+                    "examples": [
+                        0.026549
+                    ]
+                },
+                "RecalcStyleDuration": {
+                    "$id": "#/properties/metrics/properties/RecalcStyleDuration",
+                    "type": "number",
+                    "title": "The RecalcStyleDuration schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": 0.0,
+                    "examples": [
+                        0.006875
+                    ]
+                },
+                "ScriptDuration": {
+                    "$id": "#/properties/metrics/properties/ScriptDuration",
+                    "type": "number",
+                    "title": "The ScriptDuration schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": 0.0,
+                    "examples": [
+                        0.120876
+                    ]
+                },
+                "TaskDuration": {
+                    "$id": "#/properties/metrics/properties/TaskDuration",
+                    "type": "number",
+                    "title": "The TaskDuration schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": 0.0,
+                    "examples": [
+                        0.258038
+                    ]
+                },
+                "JSHeapUsedSize": {
+                    "$id": "#/properties/metrics/properties/JSHeapUsedSize",
+                    "type": "integer",
+                    "title": "The JSHeapUsedSize schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": 0,
+                    "examples": [
+                        8164436
+                    ]
+                },
+                "JSHeapTotalSize": {
+                    "$id": "#/properties/metrics/properties/JSHeapTotalSize",
+                    "type": "integer",
+                    "title": "The JSHeapTotalSize schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": 0,
+                    "examples": [
+                        10776576
+                    ]
+                }
+            },
+            "additionalProperties": true
+        },
+        "headers": {
+            "$id": "#/properties/headers",
+            "default": {},
+            "description": "Headers of the response request from the server.",
+            "examples": [
+                {
+                    "status": "200",
+                    "date": "Mon, 14 Dec 2020 00:23:26 GMT",
+                    "expires": "-1",
+                    "cache-control": "private, max-age=0",
+                    "content-type": "text/html; charset=UTF-8",
+                    "p3p": "CP=\"This is not a P3P policy! See g.co/p3phelp for more info.\"",
+                    "content-encoding": "gzip",
+                    "server": "gws",
+                    "content-length": "66852",
+                    "x-xss-protection": "0",
+                    "x-frame-options": "SAMEORIGIN",
+                    "set-cookie": "1P_JAR=2020-12-14-00; expires=Wed, 13-Jan-2021 00:23:26 GMT; path=/; domain=.google.com; Secure; SameSite=none\nNID=204=x8WnHfZR5wlLnUH1tKhuQGW8UmkncWoKpNDuoEXJBeCL0NGBhNPfJN98gMBB-Plj10c8B9AeauAor5DMzS6y24a7mw-33Phx_JeEKTRNbarLgAhEpXofHinIkZ0rIKN5C4FbopzKaUeXE-JUJaQMor-OoCmSVQk8lz7yJKRtK6Q; expires=Tue, 15-Jun-2021 00:23:26 GMT; path=/; domain=.google.com; HttpOnly",
+                    "alt-svc": "h3-29=\":443\"; ma=2592000,h3-T051=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\""
+                }
+            ],
+            "title": "Response Headers",
+            "type": "object",
+            "properties": {
+                "status": {
+                    "$id": "#/properties/headers/properties/status",
+                    "type": "string",
+                    "title": "The status schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "200"
+                    ]
+                },
+                "date": {
+                    "$id": "#/properties/headers/properties/date",
+                    "type": "string",
+                    "title": "The date schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "Mon, 14 Dec 2020 00:23:26 GMT"
+                    ]
+                },
+                "expires": {
+                    "$id": "#/properties/headers/properties/expires",
+                    "type": "string",
+                    "title": "The expires schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "-1"
+                    ]
+                },
+                "cache-control": {
+                    "$id": "#/properties/headers/properties/cache-control",
+                    "type": "string",
+                    "title": "The cache-control schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "private, max-age=0"
+                    ]
+                },
+                "content-type": {
+                    "$id": "#/properties/headers/properties/content-type",
+                    "type": "string",
+                    "title": "The content-type schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "text/html; charset=UTF-8"
+                    ]
+                },
+                "p3p": {
+                    "$id": "#/properties/headers/properties/p3p",
+                    "type": "string",
+                    "title": "The p3p schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "CP=\"This is not a P3P policy! See g.co/p3phelp for more info.\""
+                    ]
+                },
+                "content-encoding": {
+                    "$id": "#/properties/headers/properties/content-encoding",
+                    "type": "string",
+                    "title": "The content-encoding schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "gzip"
+                    ]
+                },
+                "server": {
+                    "$id": "#/properties/headers/properties/server",
+                    "type": "string",
+                    "title": "The server schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "gws"
+                    ]
+                },
+                "content-length": {
+                    "$id": "#/properties/headers/properties/content-length",
+                    "type": "string",
+                    "title": "The content-length schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "66852"
+                    ]
+                },
+                "x-xss-protection": {
+                    "$id": "#/properties/headers/properties/x-xss-protection",
+                    "type": "string",
+                    "title": "The x-xss-protection schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "0"
+                    ]
+                },
+                "x-frame-options": {
+                    "$id": "#/properties/headers/properties/x-frame-options",
+                    "type": "string",
+                    "title": "The x-frame-options schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "SAMEORIGIN"
+                    ]
+                },
+                "set-cookie": {
+                    "$id": "#/properties/headers/properties/set-cookie",
+                    "type": "string",
+                    "title": "The set-cookie schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "1P_JAR=2020-12-14-00; expires=Wed, 13-Jan-2021 00:23:26 GMT; path=/; domain=.google.com; Secure; SameSite=none\nNID=204=x8WnHfZR5wlLnUH1tKhuQGW8UmkncWoKpNDuoEXJBeCL0NGBhNPfJN98gMBB-Plj10c8B9AeauAor5DMzS6y24a7mw-33Phx_JeEKTRNbarLgAhEpXofHinIkZ0rIKN5C4FbopzKaUeXE-JUJaQMor-OoCmSVQk8lz7yJKRtK6Q; expires=Tue, 15-Jun-2021 00:23:26 GMT; path=/; domain=.google.com; HttpOnly"
+                    ]
+                },
+                "alt-svc": {
+                    "$id": "#/properties/headers/properties/alt-svc",
+                    "type": "string",
+                    "title": "The alt-svc schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "h3-29=\":443\"; ma=2592000,h3-T051=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\""
+                    ]
+                }
+            },
+            "additionalProperties": true
+        },
+        "status": {
+            "$id": "#/properties/status",
+            "type": "integer",
+            "title": "The status schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": 0,
+            "examples": [
+                200
+            ]
+        },
+        "title": {
+            "$id": "#/properties/title",
+            "default": "",
+            "description": "Page Title",
+            "examples": [
+                "Google"
+            ],
+            "title": "The title schema",
+            "type": "string"
+        },
+        "metadata": {
+            "$id": "#/properties/metadata",
+            "default": {},
+            "description": "Metadata extracted from html",
+            "examples": [
+                {
+                    "metatags": {
+                        "undefined": [
+                            null
+                        ],
+                        "image": [
+                            "/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.3-law.gif"
+                        ],
+                        "twitter:title": [
+                            "Fiestas de fin de año"
+                        ],
+                        "twitter:description": [
+                            "Felices fiestas 2020 #GoogleDoodle"
+                        ],
+                        "og:description": [
+                            "Felices fiestas 2020 #GoogleDoodle"
+                        ],
+                        "twitter:card": [
+                            "summary_large_image"
+                        ],
+                        "twitter:site": [
+                            "@GoogleDoodles"
+                        ],
+                        "twitter:image": [
+                            "https://www.google.com/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.3-2xa.gif"
+                        ],
+                        "og:image": [
+                            "https://www.google.com/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.3-2xa.gif"
+                        ],
+                        "og:image:width": [
+                            "1100"
+                        ],
+                        "og:image:height": [
+                            "440"
+                        ],
+                        "og:url": [
+                            "https://www.google.com/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.3-2xa.gif"
+                        ],
+                        "og:type": [
+                            "video.other"
+                        ]
+                    },
+                    "microdata": {
+                        "WebPage": [
+                            {
+                                "@context": "http://schema.org/",
+                                "@type": "WebPage",
+                                "image": "/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.3-law.gif"
+                            }
+                        ]
+                    },
+                    "rdfa": {},
+                    "jsonld": {}
+                }
+            ],
+            "required": [],
+            "title": "The metadata schema",
+            "type": "object",
+            "properties": {
+                "metatags": {
+                    "$id": "#/properties/metadata/properties/metatags",
+                    "default": {},
+                    "description": "An explanation about the purpose of this instance.",
+                    "examples": [
+                        {
+                            "undefined": [
+                                null
+                            ],
+                            "image": [
+                                "/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.3-law.gif"
+                            ],
+                            "twitter:title": [
+                                "Fiestas de fin de año"
+                            ],
+                            "twitter:description": [
+                                "Felices fiestas 2020 #GoogleDoodle"
+                            ],
+                            "og:description": [
+                                "Felices fiestas 2020 #GoogleDoodle"
+                            ],
+                            "twitter:card": [
+                                "summary_large_image"
+                            ],
+                            "twitter:site": [
+                                "@GoogleDoodles"
+                            ],
+                            "twitter:image": [
+                                "https://www.google.com/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.3-2xa.gif"
+                            ],
+                            "og:image": [
+                                "https://www.google.com/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.3-2xa.gif"
+                            ],
+                            "og:image:width": [
+                                "1100"
+                            ],
+                            "og:image:height": [
+                                "440"
+                            ],
+                            "og:url": [
+                                "https://www.google.com/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.3-2xa.gif"
+                            ],
+                            "og:type": [
+                                "video.other"
+                            ]
+                        }
+                    ],
+                    "required": [],
+                    "title": "The metatags schema",
+                    "type": "object",
+                    "properties": {
+                        "undefined": {
+                            "$id": "#/properties/metadata/properties/metatags/properties/undefined",
+                            "type": "array",
+                            "title": "The undefined schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": [],
+                            "examples": [
+                                [
+                                    null
+                                ]
+                            ],
+                            "additionalItems": true,
+                            "items": {
+                                "$id": "#/properties/metadata/properties/metatags/properties/undefined/items",
+                                "anyOf": [
+                                    {
+                                        "$id": "#/properties/metadata/properties/metatags/properties/undefined/items/anyOf/0",
+                                        "type": "null",
+                                        "title": "The first anyOf schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "default": null,
+                                        "examples": [
+                                            null
+                                        ]
+                                    }
+                                ]
+                            }
+                        },
+                        "image": {
+                            "$id": "#/properties/metadata/properties/metatags/properties/image",
+                            "type": "array",
+                            "title": "The image schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": [],
+                            "examples": [
+                                [
+                                    "/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.3-law.gif"
+                                ]
+                            ],
+                            "additionalItems": true,
+                            "items": {
+                                "$id": "#/properties/metadata/properties/metatags/properties/image/items",
+                                "anyOf": [
+                                    {
+                                        "$id": "#/properties/metadata/properties/metatags/properties/image/items/anyOf/0",
+                                        "type": "string",
+                                        "title": "The first anyOf schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "default": "",
+                                        "examples": [
+                                            "/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.3-law.gif"
+                                        ]
+                                    }
+                                ]
+                            }
+                        },
+                        "twitter:title": {
+                            "$id": "#/properties/metadata/properties/metatags/properties/twitter%3Atitle",
+                            "type": "array",
+                            "title": "The twitter:title schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": [],
+                            "examples": [
+                                [
+                                    "Fiestas de fin de año"
+                                ]
+                            ],
+                            "additionalItems": true,
+                            "items": {
+                                "$id": "#/properties/metadata/properties/metatags/properties/twitter%3Atitle/items",
+                                "anyOf": [
+                                    {
+                                        "$id": "#/properties/metadata/properties/metatags/properties/twitter%3Atitle/items/anyOf/0",
+                                        "type": "string",
+                                        "title": "The first anyOf schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "default": "",
+                                        "examples": [
+                                            "Fiestas de fin de año"
+                                        ]
+                                    }
+                                ]
+                            }
+                        },
+                        "twitter:description": {
+                            "$id": "#/properties/metadata/properties/metatags/properties/twitter%3Adescription",
+                            "type": "array",
+                            "title": "The twitter:description schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": [],
+                            "examples": [
+                                [
+                                    "Felices fiestas 2020 #GoogleDoodle"
+                                ]
+                            ],
+                            "additionalItems": true,
+                            "items": {
+                                "$id": "#/properties/metadata/properties/metatags/properties/twitter%3Adescription/items",
+                                "anyOf": [
+                                    {
+                                        "$id": "#/properties/metadata/properties/metatags/properties/twitter%3Adescription/items/anyOf/0",
+                                        "type": "string",
+                                        "title": "The first anyOf schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "default": "",
+                                        "examples": [
+                                            "Felices fiestas 2020 #GoogleDoodle"
+                                        ]
+                                    }
+                                ]
+                            }
+                        },
+                        "og:description": {
+                            "$id": "#/properties/metadata/properties/metatags/properties/og%3Adescription",
+                            "type": "array",
+                            "title": "The og:description schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": [],
+                            "examples": [
+                                [
+                                    "Felices fiestas 2020 #GoogleDoodle"
+                                ]
+                            ],
+                            "additionalItems": true,
+                            "items": {
+                                "$id": "#/properties/metadata/properties/metatags/properties/og%3Adescription/items",
+                                "anyOf": [
+                                    {
+                                        "$id": "#/properties/metadata/properties/metatags/properties/og%3Adescription/items/anyOf/0",
+                                        "type": "string",
+                                        "title": "The first anyOf schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "default": "",
+                                        "examples": [
+                                            "Felices fiestas 2020 #GoogleDoodle"
+                                        ]
+                                    }
+                                ]
+                            }
+                        },
+                        "twitter:card": {
+                            "$id": "#/properties/metadata/properties/metatags/properties/twitter%3Acard",
+                            "type": "array",
+                            "title": "The twitter:card schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": [],
+                            "examples": [
+                                [
+                                    "summary_large_image"
+                                ]
+                            ],
+                            "additionalItems": true,
+                            "items": {
+                                "$id": "#/properties/metadata/properties/metatags/properties/twitter%3Acard/items",
+                                "anyOf": [
+                                    {
+                                        "$id": "#/properties/metadata/properties/metatags/properties/twitter%3Acard/items/anyOf/0",
+                                        "type": "string",
+                                        "title": "The first anyOf schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "default": "",
+                                        "examples": [
+                                            "summary_large_image"
+                                        ]
+                                    }
+                                ]
+                            }
+                        },
+                        "twitter:site": {
+                            "$id": "#/properties/metadata/properties/metatags/properties/twitter%3Asite",
+                            "type": "array",
+                            "title": "The twitter:site schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": [],
+                            "examples": [
+                                [
+                                    "@GoogleDoodles"
+                                ]
+                            ],
+                            "additionalItems": true,
+                            "items": {
+                                "$id": "#/properties/metadata/properties/metatags/properties/twitter%3Asite/items",
+                                "anyOf": [
+                                    {
+                                        "$id": "#/properties/metadata/properties/metatags/properties/twitter%3Asite/items/anyOf/0",
+                                        "type": "string",
+                                        "title": "The first anyOf schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "default": "",
+                                        "examples": [
+                                            "@GoogleDoodles"
+                                        ]
+                                    }
+                                ]
+                            }
+                        },
+                        "twitter:image": {
+                            "$id": "#/properties/metadata/properties/metatags/properties/twitter%3Aimage",
+                            "type": "array",
+                            "title": "The twitter:image schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": [],
+                            "examples": [
+                                [
+                                    "https://www.google.com/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.3-2xa.gif"
+                                ]
+                            ],
+                            "additionalItems": true,
+                            "items": {
+                                "$id": "#/properties/metadata/properties/metatags/properties/twitter%3Aimage/items",
+                                "anyOf": [
+                                    {
+                                        "$id": "#/properties/metadata/properties/metatags/properties/twitter%3Aimage/items/anyOf/0",
+                                        "type": "string",
+                                        "title": "The first anyOf schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "default": "",
+                                        "examples": [
+                                            "https://www.google.com/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.3-2xa.gif"
+                                        ]
+                                    }
+                                ]
+                            }
+                        },
+                        "og:image": {
+                            "$id": "#/properties/metadata/properties/metatags/properties/og%3Aimage",
+                            "type": "array",
+                            "title": "The og:image schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": [],
+                            "examples": [
+                                [
+                                    "https://www.google.com/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.3-2xa.gif"
+                                ]
+                            ],
+                            "additionalItems": true,
+                            "items": {
+                                "$id": "#/properties/metadata/properties/metatags/properties/og%3Aimage/items",
+                                "anyOf": [
+                                    {
+                                        "$id": "#/properties/metadata/properties/metatags/properties/og%3Aimage/items/anyOf/0",
+                                        "type": "string",
+                                        "title": "The first anyOf schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "default": "",
+                                        "examples": [
+                                            "https://www.google.com/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.3-2xa.gif"
+                                        ]
+                                    }
+                                ]
+                            }
+                        },
+                        "og:image:width": {
+                            "$id": "#/properties/metadata/properties/metatags/properties/og%3Aimage%3Awidth",
+                            "type": "array",
+                            "title": "The og:image:width schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": [],
+                            "examples": [
+                                [
+                                    "1100"
+                                ]
+                            ],
+                            "additionalItems": true,
+                            "items": {
+                                "$id": "#/properties/metadata/properties/metatags/properties/og%3Aimage%3Awidth/items",
+                                "anyOf": [
+                                    {
+                                        "$id": "#/properties/metadata/properties/metatags/properties/og%3Aimage%3Awidth/items/anyOf/0",
+                                        "type": "string",
+                                        "title": "The first anyOf schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "default": "",
+                                        "examples": [
+                                            "1100"
+                                        ]
+                                    }
+                                ]
+                            }
+                        },
+                        "og:image:height": {
+                            "$id": "#/properties/metadata/properties/metatags/properties/og%3Aimage%3Aheight",
+                            "type": "array",
+                            "title": "The og:image:height schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": [],
+                            "examples": [
+                                [
+                                    "440"
+                                ]
+                            ],
+                            "additionalItems": true,
+                            "items": {
+                                "$id": "#/properties/metadata/properties/metatags/properties/og%3Aimage%3Aheight/items",
+                                "anyOf": [
+                                    {
+                                        "$id": "#/properties/metadata/properties/metatags/properties/og%3Aimage%3Aheight/items/anyOf/0",
+                                        "type": "string",
+                                        "title": "The first anyOf schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "default": "",
+                                        "examples": [
+                                            "440"
+                                        ]
+                                    }
+                                ]
+                            }
+                        },
+                        "og:url": {
+                            "$id": "#/properties/metadata/properties/metatags/properties/og%3Aurl",
+                            "type": "array",
+                            "title": "The og:url schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": [],
+                            "examples": [
+                                [
+                                    "https://www.google.com/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.3-2xa.gif"
+                                ]
+                            ],
+                            "additionalItems": true,
+                            "items": {
+                                "$id": "#/properties/metadata/properties/metatags/properties/og%3Aurl/items",
+                                "anyOf": [
+                                    {
+                                        "$id": "#/properties/metadata/properties/metatags/properties/og%3Aurl/items/anyOf/0",
+                                        "type": "string",
+                                        "title": "The first anyOf schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "default": "",
+                                        "examples": [
+                                            "https://www.google.com/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.3-2xa.gif"
+                                        ]
+                                    }
+                                ]
+                            }
+                        },
+                        "og:type": {
+                            "$id": "#/properties/metadata/properties/metatags/properties/og%3Atype",
+                            "type": "array",
+                            "title": "The og:type schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": [],
+                            "examples": [
+                                [
+                                    "video.other"
+                                ]
+                            ],
+                            "additionalItems": true,
+                            "items": {
+                                "$id": "#/properties/metadata/properties/metatags/properties/og%3Atype/items",
+                                "anyOf": [
+                                    {
+                                        "$id": "#/properties/metadata/properties/metatags/properties/og%3Atype/items/anyOf/0",
+                                        "type": "string",
+                                        "title": "The first anyOf schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "default": "",
+                                        "examples": [
+                                            "video.other"
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "additionalProperties": true
+                },
+                "microdata": {
+                    "$id": "#/properties/metadata/properties/microdata",
+                    "default": {},
+                    "description": "An explanation about the purpose of this instance.",
+                    "examples": [
+                        {
+                            "WebPage": [
+                                {
+                                    "@context": "http://schema.org/",
+                                    "@type": "WebPage",
+                                    "image": "/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.3-law.gif"
+                                }
+                            ]
+                        }
+                    ],
+                    "required": [],
+                    "title": "The microdata schema",
+                    "type": "object",
+                    "properties": {
+                        "WebPage": {
+                            "$id": "#/properties/metadata/properties/microdata/properties/WebPage",
+                            "type": "array",
+                            "title": "The WebPage schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": [],
+                            "examples": [
+                                [
+                                    {
+                                        "@context": "http://schema.org/",
+                                        "@type": "WebPage",
+                                        "image": "/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.3-law.gif"
+                                    }
+                                ]
+                            ],
+                            "additionalItems": true,
+                            "items": {
+                                "$id": "#/properties/metadata/properties/microdata/properties/WebPage/items",
+                                "anyOf": [
+                                    {
+                                        "$id": "#/properties/metadata/properties/microdata/properties/WebPage/items/anyOf/0",
+                                        "default": {},
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "examples": [
+                                            {
+                                                "@context": "http://schema.org/",
+                                                "@type": "WebPage",
+                                                "image": "/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.3-law.gif"
+                                            }
+                                        ],
+                                        "required": [],
+                                        "title": "The first anyOf schema",
+                                        "type": "object",
+                                        "properties": {
+                                            "@context": {
+                                                "$id": "#/properties/metadata/properties/microdata/properties/WebPage/items/anyOf/0/properties/%40context",
+                                                "type": "string",
+                                                "title": "The @context schema",
+                                                "description": "An explanation about the purpose of this instance.",
+                                                "default": "",
+                                                "examples": [
+                                                    "http://schema.org/"
+                                                ]
+                                            },
+                                            "@type": {
+                                                "$id": "#/properties/metadata/properties/microdata/properties/WebPage/items/anyOf/0/properties/%40type",
+                                                "type": "string",
+                                                "title": "The @type schema",
+                                                "description": "An explanation about the purpose of this instance.",
+                                                "default": "",
+                                                "examples": [
+                                                    "WebPage"
+                                                ]
+                                            },
+                                            "image": {
+                                                "$id": "#/properties/metadata/properties/microdata/properties/WebPage/items/anyOf/0/properties/image",
+                                                "type": "string",
+                                                "title": "The image schema",
+                                                "description": "An explanation about the purpose of this instance.",
+                                                "default": "",
+                                                "examples": [
+                                                    "/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.3-law.gif"
+                                                ]
+                                            }
+                                        },
+                                        "additionalProperties": true
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "additionalProperties": true
+                },
+                "rdfa": {
+                    "$id": "#/properties/metadata/properties/rdfa",
+                    "type": "object",
+                    "title": "The rdfa schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": {},
+                    "examples": [
+                        {}
+                    ],
+                    "required": [],
+                    "additionalProperties": true
+                },
+                "jsonld": {
+                    "$id": "#/properties/metadata/properties/jsonld",
+                    "type": "object",
+                    "title": "The jsonld schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": {},
+                    "examples": [
+                        {}
+                    ],
+                    "required": [],
+                    "additionalProperties": true
+                }
+            },
+            "additionalProperties": true
+        }
+    },
+    "additionalProperties": true
+}

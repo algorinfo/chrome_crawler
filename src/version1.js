@@ -13,7 +13,7 @@ const Crawler = require("./crawler.js");
 const ajv = new Ajv({ allErrors: true });
 
 const schemas = {
-  chromeResponse: fs.readFileSync("src/schemas/v1/chrome_response.json"),
+  chromeResponse: fs.readFileSync("schemas/v1/chrome_response.json"),
 };
 
 version = 1;
@@ -34,10 +34,8 @@ version1.get("/chrome", async (ctx, next) => {
   const c = await Crawler.getInstance();
   const url = ctx.request.query.url;
   console.log(url);
-  const page = await c.goto(url);
-  const response = { html: page, version: 1 };
-  ctx.state.chromeResponse(response);
-  console.log("validated");
+  const response = await c.goto(url);
+  //const isValid = await ctx.state.chromeResponse(response);
   ctx.body = response;
 });
 
