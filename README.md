@@ -4,7 +4,9 @@ This service uses puppeteer to download pages.
 
 ## Endpoints
 
-**/v1/chrome?url=....**
+- **/v1/chrome?url=....**
+- **/v1/schemas**
+- **/metrics**
 
 Example:
 ```
