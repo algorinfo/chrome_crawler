@@ -12,10 +12,11 @@ async function crawlPage(argv) {
   const c = await Crawler.getInstance();
   const response = await c.goto(url);
   c.close();
-  if (argv.json) {
+  if (argv.json ) {
     console.log(JSON.stringify(response));
-  }
-  console.log(response.html);
+  } else {
+	  console.log(response.content);
+	}
 }
 
 yargs(hideBin(process.argv)).command(
