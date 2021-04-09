@@ -1,6 +1,7 @@
 const puppeteer = require("puppeteer");
 const WAE = require("web-auto-extractor").default;
 
+
 class PrivateCrawler {
   constructor(browser) {
     this.browser = browser;
@@ -19,8 +20,11 @@ class PrivateCrawler {
     return parsed;
   }
 
-  async goto(url) {
-    const page = await this.browser.newPage();
+  async goto(url, ts) {
+    // https://pptr.dev/#?product=Puppeteer&version=v8.0.0&show=api-class-browsercontext
+    const context = await this.browser.createIncognitoBrowserContext();
+    const page = await context.newPage();
+
     page.setViewport({ width: 1280, height: 926 });
 
     await page.setRequestInterception(true);
@@ -28,9 +32,11 @@ class PrivateCrawler {
       if (request.resourceType() === "image") request.abort();
       else request.continue();
     });
-    const httpResponse = await page.goto(url, { waitUntil: "load" });
+    let response = {};
+    try {
+    const httpResponse = await page.goto(url, { waitUntil: "load", timeout: ts * 1000 });
     const html = await page.content();
-    const response = {
+    response = {
       content: html,
       metrics: await page.metrics(),
       headers: httpResponse.headers(),
@@ -38,7 +44,11 @@ class PrivateCrawler {
       title: await page.title(),
       metadata: this.extractTags(html),
     };
-    await page.close();
+    } catch(e){
+      console.log("Error with " + url + e);
+      response = null;
+    }
+    await context.close();
     //console.log(response);
     return response;
   }

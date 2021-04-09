@@ -9,14 +9,14 @@ const Router = require("koa-router");
 
 // Internal imports
 const Crawler = require("./crawler.js");
-
+const ts = process.env.WEB_TIMEOUT || 15;
 const ajv = new Ajv({ allErrors: true });
 
 const schemas = {
   chromeResponse: fs.readFileSync("schemas/v1/chrome_response.json"),
 };
 
-version = 1;
+const version = 1;
 
 const version1 = new Router({
   prefix: `/v${version}`,
@@ -34,9 +34,15 @@ version1.get("/chrome", async (ctx, next) => {
   const c = await Crawler.getInstance();
   const url = ctx.request.query.url;
   console.log(url);
-  const response = await c.goto(url);
+  const response = await c.goto(url, ts);
+  if (response){
+    ctx.status = 200;
+    ctx.body = response;
+  } else{
+    ctx.status = 500;
+    ctx.body = {};
+  }
   //const isValid = await ctx.state.chromeResponse(response);
-  ctx.body = response;
 });
 
 // Schema endpoint

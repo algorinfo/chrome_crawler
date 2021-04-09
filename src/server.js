@@ -6,12 +6,13 @@ const bodyParser = require("koa-bodyparser");
 
 // Internal imports
 const prometheus = require("./metrics.js");
-const Crawler = require("./crawler.js");
+// const Crawler = require("./crawler.js");
 const version1 = require("./version1.js");
 
 const app = new Koa();
 const router = new Router();
 const port = process.env.WEB_PORT || 3000;
+const ts = process.env.WEB_TIMEOUT || 150;
 
 // Middlewares
 app.use(bodyParser());
