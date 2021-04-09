@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "ajv": "^6.12.6",
+    "axios": "^0.21.1",
     "fs-extra": "^9.0.1",
     "koa": "^2.13.0",
     "koa-bodyparser": "^4.3.0",

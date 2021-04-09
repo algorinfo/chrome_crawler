@@ -20,7 +20,15 @@ class ExampleHandler(http.server.SimpleHTTPRequestHandler):
         url = urllib.parse.urlparse(self.path)
         if url.path == "/":
             return self._send_content(
-                "<form method=get action=/data><input type=search name=q><input type=submit></form>",
+                """
+                <html>
+                <head>
+                <meta name="title" content="Test">
+                </head>
+                <body>
+                <form method=get action=/data>
+                <input type=search name=q><input type=submit></form>
+                </body></html> """,
                 content_type="text/html",
             )
         elif url.path == "/data":

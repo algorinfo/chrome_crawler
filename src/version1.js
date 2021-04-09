@@ -9,7 +9,7 @@ const Router = require("koa-router");
 
 // Internal imports
 const Crawler = require("./crawler.js");
-const ts = process.env.WEB_TIMEOUT || 15;
+const ts = process.env.WEB_TIMEOUT || 120;
 const ajv = new Ajv({ allErrors: true });
 
 const schemas = {
