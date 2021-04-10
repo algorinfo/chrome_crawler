@@ -22,6 +22,10 @@ WEB_TIMEOUT= 150 # segs
 
 - **/v1/chrome?url=....**
 - **/v1/schemas**
+- **/v2/chrome?url=....&screen=true**
+- **/v2/axios?url=....**
+- **/v2/image?url=....**
+
 - **/metrics**
 
 Example:
@@ -32,6 +36,13 @@ curl http://localhost:3000/v1/chrome?url=https://www.google.com/doodles/
 ```
 
 **url must have the protocol**
+**screen is a optional param, any value  is taked as true**
+
+
+## Changelog
+- **screen** param added for chrome's endpoint in the version 2 of the api. If is true, then an screenshot will be taken and encoded in base64. After that, could be decoded as a png file, throught the key `screenshot`. 
+- **/image** endpoint added to download images as base64.
+- **image.py** a script to test image endpoint.
 
 ## Resources
 

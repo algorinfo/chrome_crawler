@@ -12,6 +12,13 @@ const Crawler = require("./crawler.js");
 const ts = process.env.WEB_TIMEOUT || 120;
 const ajv = new Ajv({ allErrors: true });
 
+const chromeOptions = {
+  timeout: ts,
+  viewPort: { width: 1280, height: 926 },
+  screenshot: false,
+};
+  
+
 const schemas = {
   chromeResponse: fs.readFileSync("schemas/v1/chrome_response.json"),
 };
@@ -34,13 +41,13 @@ version1.get("/chrome", async (ctx, next) => {
   const c = await Crawler.getInstance();
   const url = ctx.request.query.url;
   console.log(url);
-  const response = await c.goto(url, ts);
-  if (response){
-    ctx.status = 200;
+  const response = await c.goto(url, chromeOptions);
+  if (response["error"]){
+    ctx.status = 500;
     ctx.body = response;
   } else{
-    ctx.status = 500;
-    ctx.body = {};
+    ctx.status = 200;
+    ctx.body = response;
   }
   //const isValid = await ctx.state.chromeResponse(response);
 });

@@ -6,6 +6,7 @@ Chrome Entity
 const WAE = require("web-auto-extractor").default;
 const Router = require("koa-router");
 const axios = require('axios');
+const Buffer = require("buffer").Buffer;
 
 // Internal imports
 const Crawler = require("./crawler.js");
@@ -17,6 +18,14 @@ const version = 2;
 const version2 = new Router({
   prefix: `/v${version}`,
 });
+
+
+const chromeOptions = {
+  timeout: ts,
+  viewPort: { width: 1280, height: 926 },
+  screenshot: false,
+};
+  
 
 function extractTags(html) {
   try{
@@ -33,8 +42,12 @@ function extractTags(html) {
 version2.get("/chrome", async (ctx, next) => {
   const c = await Crawler.getInstance();
   const url = ctx.request.query.url;
+  const screenshot = ctx.request.query.screen;
+  if (screenshot){
+    chromeOptions.screenshot = true;
+  }
   console.log(url);
-  const response = await c.goto(url, ts);
+  const response = await c.goto(url, chromeOptions);
   if (response){
     response["fullurl"] = url;
     ctx.status = 200;
@@ -65,6 +78,36 @@ version2.get("/axios", async (ctx, next) => {
       }
     }
     response["content"] = rsp.data;
+    response["headers"] = rsp.headers;
+    response["status"] = rsp.status;
+    
+    ctx.status = 200;
+    ctx.body = response;
+  } catch(e){
+    console.log("error for " + url + " " + e);
+    response["status"] = 500;
+    response["error"] = e;
+    ctx.status = 500;
+    ctx.body = response;
+    
+  }
+});
+
+
+version2.get("/image", async (ctx, next) => {
+  // headers: { 'User-Agent': 'YOUR-SERVICE-NAME' }
+  const url = ctx.request.query.url;
+  console.log(url);
+  const response = {};
+  response["fullurl"] = url;
+  try{
+    const rsp = await axios.get(url,
+                                { timeout: ts * 1000,
+                                  headers: { 'User-Agent': userAgent},
+                                  responseType: 'arraybuffer'});
+
+    response["image"] = Buffer.from(rsp.data, 'binary').toString('base64');
+
     response["headers"] = rsp.headers;
     response["status"] = rsp.status;
     
