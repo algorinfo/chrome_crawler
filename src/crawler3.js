@@ -24,7 +24,7 @@ const waitTillHTMLRendered = async (page, timeout = 30000) => {
       countStableSizeIterations = 0; //reset the counter
 
     if(countStableSizeIterations >= minStableSizeIterations) {
-      console.log("Page rendered fully..");
+      // console.log("Page rendered fully..");
       break;
     }
 
@@ -108,13 +108,14 @@ class PrivateCrawler {
       httpResponse = await page.goto(url, { waitUntil: "load",
                                             timeout: options.timeout * 1000 });
     } catch(e){
-      console.log("Error with " + url + e);
+      // console.log("Error with " + url + e);
       response["error"] = e;
       return response;
     }
 
     try {
       // await page.waitForNavigation({timeout: 6 * 1000 });
+      await page.$('body');
       await waitTillHTMLRendered(page);
     } catch (e) {
         console.log(e)
@@ -122,19 +123,19 @@ class PrivateCrawler {
 
       // await page.waitForNavigation();
       // await waitTillHTMLRendered(page);
-    if (options.autoScroll === true){
-        await page.$('body');
+    if (options.autoScroll !== false){
+        // await page.$('body');
         // const elem = await page.$('body');
-        await waitTillHTMLRendered(page);
+        // await waitTillHTMLRendered(page);
         // page.evaluate()
         await autoScroll(page);
       }
       const html = await page.content();
       
-      if (options.screenshot === true){
+      if (options.screenshot !== false){
         // await page.waitForNavigation();
         // await waitTillHTMLRendered(page);
-        await page.$('body');
+        // await page.$('body');
         response["screenshot"] = await page.screenshot({ encoding: "base64",
                                                          fullpage: true });
       }
@@ -143,7 +144,7 @@ class PrivateCrawler {
       response["headers"] = httpResponse.headers();
       response["status"] = httpResponse.status();
       response["title"] = await page.title();
-      response["metadata"] = this.extractTags(html);
+      // response["metadata"] = this.extractTags(html);
       
         await context.close();
     //console.log(response);

@@ -35,7 +35,7 @@ docker:
 
 release: docker
 	docker tag nuxion/${PROJECTNAME} registry.int.deskcrash.com/nuxion/${PROJECTNAME}:$(VERSION)
-	docker push registry.int.deskcrash.com/nuxion/$(PROJECTNAME)
+	# docker push registry.int.deskcrash.com/nuxion/$(PROJECTNAME)
 	docker push registry.int.deskcrash.com/nuxion/$(PROJECTNAME):$(VERSION)
 
 registry:

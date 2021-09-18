@@ -17,17 +17,53 @@ WEB_PORT = 3000
 WEB_TIMEOUT= 150 # segs
 ```
 
+## API
 
-## Endpoints
+- GET /metrics
+  - 200 prometheus stats
 
-- **/v1/chrome?url=....**
-- **/v1/schemas**
-- **/v2/chrome?url=....&screen=true**
-- **/v2/axios?url=....**
-- **/v2/image?url=....**
+- GET /v1/chrome
+  - Uses chrome to render the site
+  - Query Params: url
+  
+- GET /v2/chrome
+  - Uses chrome to render the site
+  - Query Params: url, screen
+  
+- POST /v2/chrome
+  - Uses chrome to render the site
+  - body params: url, ts, scroll, screenshot
+ 
+- GET /v2/axios
+  - Uses axios to craw a site
+  - Query Params: url
+  
+- GET /v2/image
+  - Uses axios to get an image encoded as base64
+  - Query Params: url
+ 
+- POST /v3/axios
+  - 200 if everything ok
+  - body
+    - url: string
+    - ts: number (in secs)
+    - screenshot: bool
+    - autoscroll: bool
+    - userAgent: string
+  
+- POST /v3/chrome
+  - 200 if everything ok
+  - body
+    - url: string
+    - ts: number (in secs)
+    - screenshot: bool
+    - autoscroll: bool
+    - userAgent: string
 
-- **/metrics**
-
+- GET /v3/image
+  - Uses axios to get an image encoded as base64
+  - Query Params: url
+ 
 Example:
 
 ```

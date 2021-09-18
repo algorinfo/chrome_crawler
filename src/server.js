@@ -9,6 +9,7 @@ const prometheus = require("./metrics.js");
 // const Crawler = require("./crawler.js");
 const version1 = require("./version1.js");
 const version2 = require("./version2.js");
+const version3 = require("./version3.js");
 
 const app = new Koa();
 const router = new Router();
@@ -32,5 +33,6 @@ router.get("/echo", (ctx, next) => {
 app.use(router.routes());
 app.use(version1.routes());
 app.use(version2.routes());
+app.use(version3.routes());
 console.log(`Listening on: ${port}`);
 app.listen(port);

@@ -4,13 +4,14 @@ Chrome Entity
 */
 // External imports
 const WAE = require("web-auto-extractor").default;
+const Joi = require('joi');
 const Router = require("koa-router");
 const axios = require('axios');
 const Buffer = require("buffer").Buffer;
 
 // Internal imports
 const Crawler = require("./crawler.js");
-const ts = process.env.WEB_TIMEOUT || 120;
+const ts = process.env.WEB_TIMEOUT || 180;
 
 const userAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36";
 const version = 2;
@@ -24,6 +25,7 @@ const chromeOptions = {
   timeout: ts,
   viewPort: { width: 1280, height: 926 },
   screenshot: false,
+  autoScroll: false,
 };
   
 
@@ -43,10 +45,14 @@ version2.get("/chrome", async (ctx, next) => {
   const c = await Crawler.getInstance();
   const url = ctx.request.query.url;
   const screenshot = ctx.request.query.screen;
+  const autoScroll = ctx.request.query.autoscroll;
   if (screenshot){
     chromeOptions.screenshot = true;
   }
-  console.log(url);
+  if (autoScroll){
+    chromeOptions.autoScroll = true;
+  }
+  // console.log(url);
   const response = await c.goto(url, chromeOptions);
   if (response){
     response["fullurl"] = url;
@@ -58,6 +64,59 @@ version2.get("/chrome", async (ctx, next) => {
   }
   //const isValid = await ctx.state.chromeResponse(response);
 });
+
+
+
+const chromePost = Joi.object(
+  {
+    url: Joi.string().required(),
+    ts: Joi.number(),
+    screenshot: Joi.string(),
+    autoscroll: Joi.string(),
+  }
+)
+// Chrome endpoint
+// body data:
+// url
+// ts
+// screenshot
+// autoscroll
+version2.post("/chrome", async (ctx, next) => {
+  const c = await Crawler.getInstance();
+  const data = ctx.request.body;
+  try {
+    const value = await chromePost.validateAsync(data);
+    const url = value.url;
+    const screenshot = value.screenshot 
+    const ts = value.ts 
+    const autoScroll = value.autoscroll;
+    if (screenshot){
+      chromeOptions.screenshot = true;
+    }
+    if (autoScroll){
+       chromeOptions.autoScroll = true;
+    }
+    if (ts) {
+      chromeOptions.timeout = ts;
+    }
+    const response = await c.goto(url, chromeOptions);
+    if (response){
+        response["fullurl"] = url;
+        ctx.status = 200;
+        ctx.body = response;
+    } else{
+        ctx.status = 500;
+        ctx.body = {};
+    }
+
+  } catch (err){
+    ctx.status = 500;
+    ctx.body = { error: err };
+  }
+
+    //const isValid = await ctx.state.chromeResponse(response);
+});
+
 
 version2.get("/axios", async (ctx, next) => {
   // headers: { 'User-Agent': 'YOUR-SERVICE-NAME' }
@@ -89,7 +148,6 @@ version2.get("/axios", async (ctx, next) => {
     response["error"] = e;
     ctx.status = 500;
     ctx.body = response;
-    
   }
 });
 
