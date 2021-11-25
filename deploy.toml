@@ -1,0 +1,8 @@
+[general]
+project = "chrome_crawler"
+repository = "https://git.nyc1.algorinfo/algorinfo/chrome_crawler"
+    
+[build]
+    servers = ["10.2.2.5"]
+    folder = "/opt/services/build"
+    

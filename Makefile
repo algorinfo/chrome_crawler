@@ -21,8 +21,8 @@ help:
 	@echo "$$USAGE"
 
 local:
-	docker build -t nuxion/indexer .
-	docker tag nuxion/indexer nuxion/indexer:$(VERSION)
+	docker build -t ${DOCKERID}/${PROJECTNAME} .
+	docker tag ${DOCKERID}/${PROJECTNAME}  ${DOCKERID}/${PROJECTNAME}:${VERSION}
 
 setup:
 	yarn install
@@ -31,7 +31,7 @@ serve:
 	yarn start
 
 run:
-	docker run --rm -p 127.0.0.1:8000:8000 --env-file=.env nuxion/indexer
+	docker run --rm -p 127.0.0.1:8000:8000 --env-file=.env ${DOCKERID}/${PROJECTNAME}
 
 .PHONY: docker
 docker:
@@ -41,6 +41,10 @@ docker:
 release:
 	docker tag ${DOCKERID}/${PROJECTNAME} ${REGISTRY}/${DOCKERID}/${PROJECTNAME}:$(VERSION)
 	docker push ${REGISTRY}/${DOCKERID}/${PROJECTNAME}:$(VERSION)
+
+.PHONY: build
+build:
+	python3 scripts/build.py
 
 registry:
 	# curl http://registry.int.deskcrash.com/v2/_catalog | jq
