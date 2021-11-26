@@ -46,6 +46,10 @@ release:
 build:
 	python3 scripts/build.py
 
+.PHONY: deploy
+build:
+	python3 scripts/deploy.py
+
 registry:
 	# curl http://registry.int.deskcrash.com/v2/_catalog | jq
 	curl http://registry.nyc1.algorinfo/v2/$(DOCKERID)/$(PROJECTNAME)/tags/list | jq

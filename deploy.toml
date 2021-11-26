@@ -5,4 +5,16 @@ repository = "https://git.nyc1.algorinfo/algorinfo/chrome_crawler"
 [build]
     servers = ["10.2.2.5"]
     folder = "/opt/services/build"
+
+[deploy]
+    servers = ["10.2.2.4"]
+    folder = "/opt/services/"
+    [[deploy.services]]
+    name = "chrome"
+    image = "registry.nyc1.algorinfo/algorinfo/chrome_crawler"
+    #volumes = ["/opt/service/pepe:/app/pepe", "/opt/:/app"]
+    ports = ["3000:3000"]
+    tag_version = true
+     
+    
     

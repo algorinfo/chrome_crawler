@@ -1,0 +1,26 @@
+version: "3.5"
+
+services:
+    {% for srv in data -%}
+    {{ srv.name }}:
+        image: {{ srv.image }}
+        env_file: .env.docker
+        restart: {{ srv.restart }}
+        {% if srv.volumes -%}
+        volumes:
+        {%- for item in srv.volumes %}
+            - {{ item -}}
+        {% endfor %}
+        {% endif %}
+        {% if srv.ports -%}
+        ports:
+        {%- for item in srv.ports %}
+            - {{ item -}}
+        {% endfor %}
+        {% endif %}
+
+        {%- if srv.network_mode -%}
+        network_mode: host
+        {% endif %}
+    {% endfor %}
+

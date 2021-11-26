@@ -26,3 +26,4 @@ if not folder_present:
 
 c.run(f"cd {BUILD_FOLDER} && git pull", pty=True)
 c.run(f"cd {BUILD_FOLDER} && make docker && make release")
+print(common.local_tag())
