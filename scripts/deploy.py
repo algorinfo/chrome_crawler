@@ -22,5 +22,6 @@ for srv in conf["deploy"]["servers"]:
     # c.sudo(f"chown op:algorinfo {SRV_FOLDER}", hide=True, pty=True)
     base_path = pathlib.Path(f"{os.getcwd()}/scripts/todeploy/{srv}")
     c.put(f"{base_path}/docker-compose.yml", f"{SRV_FOLDER}")
+    c.run(f"cd {SRV_FOLDER} && touch .env.docker")
     c.run(f"cd {SRV_FOLDER} && docker-compose stop && docker-compose rm")
     c.run(f"cd {SRV_FOLDER} && docker-compose up -d")

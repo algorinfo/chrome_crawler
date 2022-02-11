@@ -47,7 +47,7 @@ build:
 	python3 scripts/build.py
 
 .PHONY: deploy
-build:
+deploy:
 	python3 scripts/deploy.py
 
 registry:
