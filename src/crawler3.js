@@ -38,7 +38,7 @@ async function autoScroll(page){
         await new Promise((resolve, reject) => {
             var totalHeight = 0;
           var distance = 100;
-          console.log("Scrolling");
+          // console.log("Scrolling");
             var timer = setInterval(() => {
                 var scrollHeight = document.body.scrollHeight;
                 window.scrollBy(0, distance);
@@ -105,6 +105,8 @@ class PrivateCrawler {
 
     let httpResponse;
     try {
+
+      // console.log("going to ", url)
       httpResponse = await page.goto(url, { waitUntil: "load",
                                             timeout: options.timeout * 1000 });
     } catch(e){
@@ -115,8 +117,10 @@ class PrivateCrawler {
 
     try {
       // await page.waitForNavigation({timeout: 6 * 1000 });
-      await page.$('body');
-      await waitTillHTMLRendered(page);
+      // console.log("waiting for element: ", options.waitElement)
+      await page.$(options.waitElement);
+      // console.log("GOT ")
+      // await waitTillHTMLRendered(page);
     } catch (e) {
         console.log(e)
     }
@@ -128,6 +132,8 @@ class PrivateCrawler {
         // const elem = await page.$('body');
         // await waitTillHTMLRendered(page);
         // page.evaluate()
+        // console.log("autoscrolling")
+        await waitTillHTMLRendered(page);
         await autoScroll(page);
       }
       const html = await page.content();

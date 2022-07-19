@@ -2,8 +2,11 @@
   "dependencies": {
     "ajv": "^6.12.6",
     "axios": "^0.21.1",
+    "cheerio": "1.0.0-rc.10",
     "fs-extra": "^9.0.1",
+    "google-play-scraper": "^9.0.2",
     "joi": "^17.4.2",
+    "jsonwebtoken": "^8.5.1",
     "koa": "^2.13.0",
     "koa-bodyparser": "^4.3.0",
     "koa-logger": "^3.2.1",

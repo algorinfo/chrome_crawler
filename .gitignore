@@ -588,3 +588,4 @@ workflows/*.ipynb
 dask-worker-space
 credentials.json
 todeploy
+.secrets/

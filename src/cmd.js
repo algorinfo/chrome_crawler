@@ -5,6 +5,16 @@
 const yargs = require("yargs/yargs");
 const { hideBin } = require("yargs/helpers");
 const Crawler = require("./crawler.js");
+const fs = require("fs");
+var jwt = require('jsonwebtoken');
+var privateKey = fs.readFileSync('.secrets/private.key');
+const minutes = 60 * 1000
+function generateToken(argv){
+  const usr = `${argv.usr}`
+  var token = jwt.sign({ usr: usr, iat: Date.now() + minutes * 5 }, privateKey, { algorithm: 'ES512'});
+  console.log(token)
+};
+
 
 async function crawlPage(argv) {
   const url = `${argv.url}`;
@@ -19,15 +29,25 @@ async function crawlPage(argv) {
 	}
 }
 
+// yargs(hideBin(process.argv)).command(
+//   "crawl [url]",
+//   "Crawl a desired url",
+//   (yargs) => {
+//     yargs.positional("url", { describe: "url to crawl" });
+//     yargs.option("json", {
+//       describe: "print json format",
+//       default: false,
+//     });
+//   },
+//   crawlPage
+// ).argv;
+// 
+
 yargs(hideBin(process.argv)).command(
-  "crawl [url]",
-  "Crawl a desired url",
+  "jwt [usr]",
+  "Generate a jwt token",
   (yargs) => {
-    yargs.positional("url", { describe: "url to crawl" });
-    yargs.option("json", {
-      describe: "print json format",
-      default: false,
-    });
+    yargs.positional("usr", { describe: "user to encode" });
   },
-  crawlPage
+  generateToken
 ).argv;

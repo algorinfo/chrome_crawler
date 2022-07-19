@@ -3,23 +3,33 @@ const Koa = require("koa");
 const logger = require("koa-logger");
 const Router = require("koa-router");
 const bodyParser = require("koa-bodyparser");
-
+const { jwtMiddleware} = require("./security.js");
+const fs = require("fs");
 // Internal imports
 const prometheus = require("./metrics.js");
 // const Crawler = require("./crawler.js");
 const version1 = require("./version1.js");
 const version2 = require("./version2.js");
 const version3 = require("./version3.js");
+const playstore1 = require("./playstore1.js");
 
 const app = new Koa();
 const router = new Router();
 // const ts = process.env.WEB_TIMEOUT || 150;
 const port = process.env.WEB_PORT || 3000;
+const jwt_secret = process.env.JWT_SECRET;
+const jwt_alg = process.env.JWT_ALG || "ES512";
+var secret = jwt_secret;
+if (jwt_alg === "ES512"){
+  secret = fs.readFileSync(jwt_secret);
+}
+
 
 // Middlewares
 app.use(bodyParser());
 app.use(logger());
 app.use(prometheus.middleware({}));
+app.use(jwtMiddleware(secret));
 
 // Routes
 router.get("/", (ctx, next) => {
@@ -31,8 +41,9 @@ router.get("/echo", (ctx, next) => {
 });
 
 app.use(router.routes());
-app.use(version1.routes());
-app.use(version2.routes());
+// app.use(version1.routes()); // no protected
+// app.use(version2.routes()); // no protected
 app.use(version3.routes());
+app.use(playstore1.routes());
 console.log(`Listening on: ${port}`);
 app.listen(port);

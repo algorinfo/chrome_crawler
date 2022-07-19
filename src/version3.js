@@ -7,8 +7,8 @@ const Joi = require('joi');
 const Router = require("koa-router");
 const axios = require('axios');
 const Buffer = require("buffer").Buffer;
-
 // Internal imports
+const { protected } = require("./security.js");
 const Crawler = require("./crawler3.js");
 const ts = process.env.WEB_TIMEOUT || 180;
 
@@ -22,6 +22,7 @@ const version3 = new Router({
 const defaultValues = {
   timeout: process.env.WEB_TIMEOUT || 180,
   viewPort: { width: 1280, height: 926 },
+  waitElement: "body",
   screenshot: false,
   autoScroll: false,
   userAgent: userAgent,
@@ -31,6 +32,7 @@ const crawlTask = Joi.object(
   {
     url: Joi.string().required(),
     ts: Joi.number(),
+    waitElement: Joi.string(),
     screenshot: Joi.bool(),
     autoscroll: Joi.bool(),
     userAgent: Joi.string(),
@@ -44,6 +46,7 @@ async function parseTask(data){
   const screenshot = values.screenshot 
   const ts = values.ts 
   const autoScroll = values.autoscroll;
+  const waitElement = values.waitElement;
   
   if (typeof screenshot !== "undefined"){
     parsed.screenshot = screenshot
@@ -54,6 +57,9 @@ async function parseTask(data){
   }
   if (typeof ts !== "undefined") {
      parsed.timeout = ts;
+  }
+  if (typeof waitElement !== "undefined") {
+     parsed.waitElement = waitElement;
   }
 
   parsed["url"] = values.url;
@@ -67,7 +73,7 @@ async function parseTask(data){
 // ts
 // screenshot
 // autoscroll
-version3.post("/chrome", async (ctx, next) => {
+version3.post("/chrome", protected, async (ctx, next) => {
   const c = await Crawler.getInstance();
   const data = ctx.request.body;
   try {
@@ -91,7 +97,7 @@ version3.post("/chrome", async (ctx, next) => {
     //const isValid = await ctx.state.chromeResponse(response);
 });
 
-version3.post("/axios", async (ctx, next) => {
+version3.post("/axios", protected, async (ctx, next) => {
   // headers: { 'User-Agent': 'YOUR-SERVICE-NAME' }
   // const url = ctx.request.query.url;
   // console.log(url);
@@ -122,7 +128,7 @@ version3.post("/axios", async (ctx, next) => {
 });
 
 
-version3.get("/image", async (ctx, next) => {
+version3.get("/image", protected, async (ctx, next) => {
   // headers: { 'User-Agent': 'YOUR-SERVICE-NAME' }
   const url = ctx.request.query.url;
   console.log(url);
