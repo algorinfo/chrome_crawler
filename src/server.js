@@ -17,6 +17,7 @@ const app = new Koa();
 const router = new Router();
 // const ts = process.env.WEB_TIMEOUT || 150;
 const port = process.env.WEB_PORT || 3000;
+const addr = process.env.WEB_ADDR || "localhost";
 const jwt_secret = process.env.JWT_SECRET;
 const jwt_alg = process.env.JWT_ALG || "ES512";
 var secret = jwt_secret;
@@ -45,5 +46,5 @@ app.use(router.routes());
 // app.use(version2.routes()); // no protected
 app.use(version3.routes());
 app.use(playstore1.routes());
-console.log(`Listening on: ${port}`);
-app.listen(port);
+console.log(`Listening on: ${addr}:${port}`);
+app.listen(port, addr);

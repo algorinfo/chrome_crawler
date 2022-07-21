@@ -120,3 +120,5 @@ __pycache__
 scripts/
 deploy.toml
 poetry.lock
+.envrc
+.secrets/

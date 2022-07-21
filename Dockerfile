@@ -26,4 +26,4 @@ ENV NODE_ENV="prod"
 COPY . .
 RUN yarn install --ignore-scripts
 
-ENTRYPOINT ["node", "src/server.js"]
+CMD ["node", "src/server.js"]

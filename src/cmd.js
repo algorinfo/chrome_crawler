@@ -11,7 +11,7 @@ var privateKey = fs.readFileSync('.secrets/private.key');
 const minutes = 60 * 1000
 function generateToken(argv){
   const usr = `${argv.usr}`
-  var token = jwt.sign({ usr: usr, iat: Date.now() + minutes * 5 }, privateKey, { algorithm: 'ES512'});
+  var token = jwt.sign({ usr: usr, iat: Date.now() + (60000 * (60 * 24))}, privateKey, { algorithm: 'ES512'});
   console.log(token)
 };
 
