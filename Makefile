@@ -13,8 +13,8 @@ export USAGE
 .EXPORT_ALL_VARIABLES:
 VERSION := $(shell git describe --tags)
 BUILD := $(shell git rev-parse --short HEAD)
-PROJECTNAME := $(shell basename "$(PWD)")
-DOCKERID = $(shell echo "algorinfo")
+PROJECTNAME=chrome_crawler
+DOCKERID=algorinfo
 REGISTRY := registry.nyc1.algorinfo
 
 help:
