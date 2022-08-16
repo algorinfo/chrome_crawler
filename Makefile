@@ -52,4 +52,4 @@ deploy:
 
 registry:
 	# curl http://registry.int.deskcrash.com/v2/_catalog | jq
-	curl http://registry.nyc1.algorinfo/v2/$(DOCKERID)/$(PROJECTNAME)/tags/list | jq
+	curl https://${REGISTRY}/v2/$(DOCKERID)/$(PROJECTNAME)/tags/list | jq
