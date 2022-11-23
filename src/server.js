@@ -11,7 +11,7 @@ const prometheus = require("./metrics.js");
 // const version1 = require("./version1.js");
 // const version2 = require("./version2.js");
 const version3 = require("./version3.js");
-const version4 = require("./version3.js");
+const version4 = require("./version4.js");
 const playstore1 = require("./playstore1.js");
 
 const app = new Koa();
@@ -35,7 +35,7 @@ app.use(jwtMiddleware(secret));
 
 // Routes
 router.get("/", (ctx, next) => {
-  ctx.body = { msg: "Hi world!" };
+  ctx.body = { msg: "Hi world! from Chrome Crawler" };
 });
 
 router.get("/echo", (ctx, next) => {
