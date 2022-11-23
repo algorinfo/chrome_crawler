@@ -8,9 +8,10 @@ const fs = require("fs");
 // Internal imports
 const prometheus = require("./metrics.js");
 // const Crawler = require("./crawler.js");
-const version1 = require("./version1.js");
-const version2 = require("./version2.js");
+// const version1 = require("./version1.js");
+// const version2 = require("./version2.js");
 const version3 = require("./version3.js");
+const version4 = require("./version3.js");
 const playstore1 = require("./playstore1.js");
 
 const app = new Koa();
@@ -45,6 +46,7 @@ app.use(router.routes());
 // app.use(version1.routes()); // no protected
 // app.use(version2.routes()); // no protected
 app.use(version3.routes());
+app.use(version4.routes());
 app.use(playstore1.routes());
 console.log(`Listening on: ${addr}:${port}`);
 app.listen(port, addr);

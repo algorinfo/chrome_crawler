@@ -91,6 +91,16 @@ JWT_SECRET = ".secrets/public.key"
   - Uses axios to get an image encoded as base64
   - Query Params: url
 
+- POST /v4/axios
+  - 200 if everything ok
+  - body
+    - url: string
+    - ts: number (in secs)
+    - screenshot: bool
+    - autoscroll: bool
+    - headers: any (A map which will used as headers for axios)
+ 
+
 ### Playstore endpoints
 
 - GET /v1/playstore/:appid 
