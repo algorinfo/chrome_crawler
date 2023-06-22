@@ -34,6 +34,10 @@ JWT_SECRET = ".secrets/public.key"
 ```
 ## API
 
+> ⚠️ New V4 endpoint, it uses Playwright instead of puppeteer
+
+> ⚠️ V3 will be deprecated soon 
+
 > ⚠️ V1 and v2 of chrome&axios apis are disabled in the code
 
 > ⚠️ Playstore API could be very inestable, for more information refer to
@@ -91,15 +95,53 @@ JWT_SECRET = ".secrets/public.key"
   - Uses axios to get an image encoded as base64
   - Query Params: url
 
+- POST /v4/chrome
+  - 200 if everything ok
+  - body
+    - `url` [string]: 
+    - `ts`: number (in secs)
+    - `waitElement` [string | null]: Visible text of an element to wait
+    - `screenshot` [bool]:  Take a screenshot of the fullpage
+    - `autoscroll`: bool (not used)
+    - `headers`: not used
+    - `proxy` [object]: Configure a proxy to be used
+      - `server` [string]: required
+      - `username` [string]: optional
+      - `password` [string]: optional
+ 
 - POST /v4/axios
   - 200 if everything ok
   - body
-    - url: string
-    - ts: number (in secs)
-    - screenshot: bool
-    - autoscroll: bool
-    - headers: any (A map which will used as headers for axios)
- 
+    - `url` [string]: 
+    - `ts`[number]: timeout (in secs)
+    - `waitElement` [string | null]: Not used
+    - `screenshot` [bool]:  Not used
+    - `autoscroll`: bool (not used)
+    - `headers`: any, to be used with axios
+    - `proxy` [object]: **Not implemented right now**
+      - `server` [string]: required
+      - `username` [string]: optional
+      - `password` [string]: optional
+
+- POST /v4/google-search
+  - 200 if everything ok
+  - body
+    - `text` [string]: a query to search in google
+    - `nextPage` [string|null]: Used to iterate over the google results
+    - `ts` [number]: timeout (in secs)
+    - `waitElement` [string | null]: Not used
+    - `screenshot` [bool]:  Take and screenshot
+    - `autoscroll`: bool (not used)
+    - `headers` [any]: not used 
+    - `proxy` [object]: 
+      - `server` [string]: required
+      - `username` [string]: optional
+      - `password` [string]: optional
+
+
+
+
+
 
 ### Playstore endpoints
 

@@ -1,4 +1,4 @@
-const { protected } = require("./security.js");
+const { protected } = require("../middlewares/security.js");
 const gplay = require('google-play-scraper');
 const version = 1;
 const Router = require("koa-router");

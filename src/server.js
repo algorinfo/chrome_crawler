@@ -3,16 +3,16 @@ const Koa = require("koa");
 const logger = require("koa-logger");
 const Router = require("koa-router");
 const bodyParser = require("koa-bodyparser");
-const { jwtMiddleware} = require("./security.js");
+const { jwtMiddleware} = require("./middlewares/security.js");
 const fs = require("fs");
 // Internal imports
-const prometheus = require("./metrics.js");
+const prometheus = require("./middlewares/metrics.js");
 // const Crawler = require("./crawler.js");
 // const version1 = require("./version1.js");
 // const version2 = require("./version2.js");
-const version3 = require("./version3.js");
-const version4 = require("./version4.js");
-const playstore1 = require("./playstore1.js");
+const version3 = require("./routes/version3.js");
+const version4 = require("./routes/version4.js");
+const playstore1 = require("./routes/playstore1.js");
 
 const app = new Koa();
 const router = new Router();
@@ -31,7 +31,7 @@ if (jwt_alg === "ES512"){
 app.use(bodyParser());
 app.use(logger());
 app.use(prometheus.middleware({}));
-app.use(jwtMiddleware(secret));
+app.use(jwtMiddleware(secret, jwt_alg));
 
 // Routes
 router.get("/", (ctx, next) => {

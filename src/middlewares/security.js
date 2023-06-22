@@ -9,14 +9,14 @@ function extractBearerToken(authHeader){
   return token
 };
 
-const jwtMiddleware = function (secretOrPublic) {
+const jwtMiddleware = function (secretOrPublic, alg) {
   return async function tokenValidation(ctx, next) {
     try {
       const authHeader = ctx.headers.authorization
       // console.log("authHeader: ", authHeader)
       const bearerToken = extractBearerToken(authHeader);
       if (bearerToken !== "invalid"){
-            const decoded = jwt.verify(bearerToken, secretOrPublic, algorithms=["ES512"])
+            const decoded = jwt.verify(bearerToken, secretOrPublic, algorithms=[alg])
             ctx.state.jwtDecoded = decoded 
             // await next()
       } else {
