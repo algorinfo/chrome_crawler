@@ -65,9 +65,9 @@ async function crawlPage(options, headless=true){
   response["fullurl"] = options.url;
   const client = new Browser();
   if (options.proxyConf) {
-    await client.launch({proxy: options.proxyConf, headless: headless});
+    await client.launch({proxy: options.proxyConf, headless: headless, executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined});
   } else {
-    await client.launch({headless: headless});
+    await client.launch({headless: headless, executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined});
   }
 
   await client.setContext({locale: "en-US", isMobile: false, viewport: { width: 1280, height: 720 }})
