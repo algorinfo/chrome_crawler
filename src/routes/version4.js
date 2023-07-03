@@ -26,6 +26,7 @@ const defaultValues = {
   screenshot: false,
   autoScroll: false,
   headers: {"User-Agent": userAgent},
+  proxy: null
 };
 const proxyConf =
   {
@@ -93,6 +94,9 @@ async function parseTask(data){
   if (typeof waitElement !== "undefined") {
      parsed.waitElement = waitElement;
   }
+  if (values.proxy) {
+    parsed.proxy = values.proxy
+  }
 
   parsed["url"] = values.url;
   return parsed
@@ -157,7 +161,6 @@ version4.post("/google-search", protected, async (ctx, next) => {
     options["url"] = `https://google.com/search?${query}`
   }
 
-  console.log(options["url"])
   const pageRsp = await crawlPage(options, headless=true)
   response["query"] = query
 
