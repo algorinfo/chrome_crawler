@@ -98,14 +98,22 @@ async function crawlPage(options, headless=true){
     console.error("Error waiting")
   }
   let screenshot = null
+  let statusCode = 200
+  let content = null
   if (options.screenshot === true) {
     const buffer =  await page.screenshot({fullPage: true });
     screenshot = buffer.toString('base64')
   }
-  const content = await page.content()
+    // await page.reload({ waitUntil: "networkidle"})
+  try{
+      content = await page.content()
+  } catch {
+    statusCode = 500
+  }
+
   response["content"] = content
   response["headers"] = {}
-  response["status"] = 200
+  response["status"] = statusCode
   response["screenshot"] = screenshot
   response["fullLoaded"] = fullLoaded
   await client.close()
