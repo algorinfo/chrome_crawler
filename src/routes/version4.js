@@ -19,15 +19,9 @@ const version4 = new Router({
   prefix: `/v${version}`,
 });
 
-const defaultValues = {
-  timeout: process.env.WEB_TIMEOUT || 180,
-  viewPort: { width: 1280, height: 926 },
-  waitElement: null,
-  screenshot: false,
-  autoScroll: false,
-  headers: {"User-Agent": userAgent},
-  proxy: null
-};
+const defaultTs =  process.env.WEB_TIMEOUT || 180
+const googleDefault = "https://www.google.com"
+
 const proxyConf =
   {
     server: Joi.string().required(),
@@ -36,71 +30,83 @@ const proxyConf =
   }
 
 
+// 40.6976312,-74.1444858 New York
+const geoType = {
+  longitude: Joi.number().default(40.6976312),
+  latitude: Joi.number().default(-74.1444858)
+}
+const viewPortType = {
+  width: Joi.number().default(1280),
+  height: Joi.number().default(720)
+}
+const emulationType =
+  {
+    locale: Joi.string().default("en-US"),
+    timezoneId: Joi.string().default("America/New_York"),
+    isMobile: Joi.boolean().default(false),
+    viewport: Joi.object().keys(viewPortType),
+    geoEnabled: Joi.boolean().default(false),
+    geolocation: Joi.object().keys(geoType).optional().allow(null),
+  }
+
+const emulationDef = {
+  locale: "en-US",
+  timezoneId: "America/New_York",
+  isMobile: false,
+  viewport: { width: 1280, height: 720},
+  geoEnabled: false,
+  geolocation: {
+    longitude: 40.6976312,
+    latitude: -74.1444858
+  }
+}
+
 const crawlTask = Joi.object(
   {
     url: Joi.string().required(),
-    ts: Joi.number(),
+    ts: Joi.number().default(defaultTs),
     waitElement: Joi.string().optional().allow(null),
-    screenshot: Joi.bool(),
-    autoscroll: Joi.bool(),
-    headers: Joi.any(),
-    jsEnabled: Joi.bool(),
-    proxy: Joi.object().keys(proxyConf)
+    screenshot: Joi.bool().default(false),
+    autoscroll: Joi.bool().default(false),
+    headers: Joi.any().allow(null),
+    proxy: Joi.object().keys(proxyConf).optional().allow(null),
+    emulation: Joi.object().keys(emulationType).default(emulationDef)
   }
 )
 
 const searchTask = Joi.object(
   {
     text: Joi.string().required(),
-    ts: Joi.number(),
-    screenshot: Joi.bool(),
+    url: Joi.string().default(googleDefault),
+    ts: Joi.number().default(defaultTs),
+    screenshot: Joi.bool().default(false),
     nextPage: Joi.string().optional().allow(null),
-    headers: Joi.any(),
-    proxy: Joi.object().keys(proxyConf)
+    headers: Joi.any().optional(),
+    proxy: Joi.object().keys(proxyConf).optional(),
+    emulation: Joi.object().keys(emulationType),
   }
 )
 
 async function parseSearchTask(data){
-  const values = await searchTask.validateAsync(data);
-  const ts = values.ts 
-  
-  if (typeof values.screenshot !== "undefined"){
-    values.screenshot = true
-  } 
-  if (typeof ts !== "undefined") {
-     values.ts = 5;
+  // const emu =await emulationType.validateAsync(emulationDef);
+  if (data.emulation === null || data.emulation === undefined ){
+    data.emulation = emulationDef
   }
+  const values = await searchTask.validateAsync(data);
+  console.log(values)
+  
   return values
 }
 
 async function parseTask(data){
-  const parsed = defaultValues;
+  if (data.emulation === null || data.emulation === undefined ){
+    data.emulation = emulationDef
+  }
+  console.log(data)
   const values = await crawlTask.validateAsync(data);
-  const screenshot = values.screenshot 
-  const ts = values.ts 
-  const autoScroll = values.autoscroll;
-  const waitElement = values.waitElement;
   
-  if (typeof screenshot !== "undefined"){
-    parsed.screenshot = screenshot
-    
-  } 
-  if (typeof autoScroll !== "undefined"){
-       parsed.autoScroll = autoScroll;
-  }
-  if (typeof ts !== "undefined") {
-     parsed.ts = ts;
-  }
-  if (typeof waitElement !== "undefined") {
-     parsed.waitElement = waitElement;
-  }
-  if (values.proxy) {
-    parsed.proxy = values.proxy
-  }
-
-  parsed["url"] = values.url;
-  return parsed
-  
+  return values
+ 
 }
 
 version4.post("/axios", protected, async (ctx, next) => {
@@ -141,7 +147,7 @@ version4.post("/chrome", protected, async (ctx, next) => {
 
   const options = await parseTask(data);
 
-  const response = await crawlPage(options)
+  const response = await crawlPage(options, headless=true)
   ctx.status = 200;
   ctx.body = response;
   
@@ -155,10 +161,10 @@ version4.post("/google-search", protected, async (ctx, next) => {
   const response = {}
 
   if (options.nextPage) {
-    options["url"] = `https://google.com${options.nextPage}`
+    options["url"] = `${options.url}${options.nextPage}`
   } else {
 
-    options["url"] = `https://google.com/search?${query}`
+    options["url"] = `${options.url}/search?${query}`
   }
 
   const pageRsp = await crawlPage(options, headless=true)
@@ -185,6 +191,7 @@ version4.post("/google-search", protected, async (ctx, next) => {
   response["next"] = nextLink
   response["screenshot"] = pageRsp["screenshot"]
   response["content"] = pageRsp["content"]
+  response["status"] = pageRsp["status"]
 
   ctx.status = 200;
   ctx.body = response

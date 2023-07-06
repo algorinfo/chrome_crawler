@@ -27,11 +27,8 @@ local:
 setup:
 	yarn install
 
-serve:
-	yarn start
-
 run:
-	docker run --rm -p 127.0.0.1:8000:8000 --env-file=.env ${DOCKERID}/${PROJECTNAME}
+	yarn run start
 
 .PHONY: docker
 docker:
@@ -53,3 +50,10 @@ deploy:
 registry:
 	# curl http://registry.int.deskcrash.com/v2/_catalog | jq
 	curl https://${REGISTRY}/v2/$(DOCKERID)/$(PROJECTNAME)/tags/list | jq
+
+token:
+	./src/cmd.js jwt nuxion
+serve:
+	yarn start
+
+

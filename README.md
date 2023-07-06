@@ -1,6 +1,6 @@
 # Chrome Crawler
 
-This service uses puppeteer and axios to crawl pages.
+This service uses puppeteer(to be deprecated), playwright and axios to crawl pages.
 
 It allows to scroll, take screenshots and get images encoded as Base64.
 
@@ -105,10 +105,27 @@ JWT_SECRET = ".secrets/public.key"
     - `autoscroll`: bool (not used)
     - `headers`: not used
     - `proxy` [object]: Configure a proxy to be used
-      - `server` [string]: required
+      - `server` [string]: required, without protocol
       - `username` [string]: optional
       - `password` [string]: optional
- 
+    - `emulation` [object]: 
+      - `locale` [string]: default "en-US"
+      - `timezoneId`[string]: default "America/New_York"
+      - `isMobile` [bool]: default False
+      - `viewport` [object]: 
+        - `width` [number]: default 1280
+        - `height` [number]: default 720
+      - `geoEnabled` [bool]: default True, add geolocation to permissions
+      - `geolocation` [object]: (default New York)
+        - `longitude` [number]: default 40.6976312 
+        - `latitude` [number]: default -74.1444858
+  - response:
+    - `content` [string]: Raw html of the response
+    - `headers` [object]: not used
+    - `status` [number]: status code, 200 or 500
+    - `fullLoaded` [bool]: if the page was loaded completly
+    - `screenshot` [string]: Base64 encoded image
+
 - POST /v4/axios
   - 200 if everything ok
   - body
@@ -127,6 +144,7 @@ JWT_SECRET = ".secrets/public.key"
   - 200 if everything ok
   - body
     - `text` [string]: a query to search in google
+    - `url` [string]: optional, the google's url to use. default: https://www.google.com
     - `nextPage` [string|null]: Used to iterate over the google results
     - `ts` [number]: timeout (in secs)
     - `waitElement` [string | null]: Not used
@@ -137,7 +155,13 @@ JWT_SECRET = ".secrets/public.key"
       - `server` [string]: required
       - `username` [string]: optional
       - `password` [string]: optional
-
+  - response:
+    - `query` [string]: Parsed query 
+    - `content` [string]: Raw html of the response
+    - `status` [number]: status code, 200 or 500
+    - `next` [string]: uri of the next page
+    - `links` [List[{href:text}]]: uri of the next page
+    - `screenshot` [string]: Base64 encoded image
 
 
 

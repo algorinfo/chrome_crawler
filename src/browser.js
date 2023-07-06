@@ -1,6 +1,7 @@
 const {chromium} = require('playwright-extra');
 const stealthPlugin = require('puppeteer-extra-plugin-stealth');
 const { readFileAsync, writeFileAsync } = require('./utils');
+const { permissions } = require('google-play-scraper');
 
 
 class Browser {
@@ -61,6 +62,7 @@ class Browser {
 }
 
 async function crawlPage(options, headless=true){
+  console.log(options)
   const response = {};
   response["fullurl"] = options.url;
   const client = new Browser();
@@ -69,8 +71,19 @@ async function crawlPage(options, headless=true){
   } else {
     await client.launch({headless: headless, executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined});
   }
+  const permissions = []
+  if (options.emulation.geoEnabled) {
+    permissions.push("geolocation")
+  }
 
-  await client.setContext({locale: "en-US", isMobile: false, viewport: { width: 1280, height: 720 }})
+  await client.setContext({
+    permissions: permissions,
+    locale: options.emulation.locale,
+    timezoneId: options.emulation.timezoneId,
+    isMobile: options.emulation.isMobile,
+    viewport: options.emulation.viewport,
+    geolocation: options.emulation.geolocation,
+  })
   await client.context.route('**.jpg', route => route.abort());
   await client.context.route('**.png', route => route.abort());
   const page = await client.newPage();
