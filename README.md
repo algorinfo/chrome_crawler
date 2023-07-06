@@ -32,13 +32,13 @@ If `JWT_ALG` is "ES512", then `JWT_SECRET` must contain the absolute or relative
 ```
 JWT_ALG = "ES512"
 JWT_SECRET = ".secrets/public.key"
+```
 
 `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` is set by default and is related to where Alpine install the chromiun browser. 
 This variable doesn't belong to playwright, and it is used becose playwright uses their own browser binaries, which are not compatible for alpine. 
 
 > ⚠️ In the future a Dockerfile.debian version could be provided. It requires a change in how the dockerfile is structured.
 
-```
 ## API
 
 > ⚠️ New V4 endpoint, it uses Playwright instead of puppeteer
