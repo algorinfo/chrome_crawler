@@ -14,8 +14,9 @@ export USAGE
 VERSION := $(shell git describe --tags)
 BUILD := $(shell git rev-parse --short HEAD)
 PROJECTNAME=chrome_crawler
-DOCKERID=algorinfo
-REGISTRY := registry.nyc1.algorinfo
+DOCKERID=nuxion
+REGISTRY=us-central1-docker.pkg.dev/algorinfo99/docker-repo
+REGION=us-central1
 
 help:
 	@echo "$$USAGE"
@@ -27,25 +28,14 @@ local:
 setup:
 	yarn install
 
+.PHONY: run
 run:
 	yarn run start
 
-.PHONY: docker
-docker:
-	docker build -t ${DOCKERID}/${PROJECTNAME} .
+.PHONY: run-docker
+run-docker:
+	./scripts/run-local.sh ${VERSION}
 
-.PHONY: release
-release:
-	docker tag ${DOCKERID}/${PROJECTNAME} ${REGISTRY}/${DOCKERID}/${PROJECTNAME}:$(VERSION)
-	docker push ${REGISTRY}/${DOCKERID}/${PROJECTNAME}:$(VERSION)
-
-.PHONY: build
-build:
-	python3 scripts/build.py
-
-.PHONY: deploy
-deploy:
-	python3 scripts/deploy.py
 
 registry:
 	# curl http://registry.int.deskcrash.com/v2/_catalog | jq
@@ -53,7 +43,28 @@ registry:
 
 token:
 	./src/cmd.js jwt nuxion
-serve:
-	yarn start
 
+
+.PHONY: buld-local
+build-local:
+	docker build -t ${DOCKERID}/${PROJECTNAME} .
+	docker tag ${DOCKERID}/${PROJECTNAME} ${REGISTRY}/${DOCKERID}/${PROJECTNAME}:$(VERSION)
+
+
+## Standard commands for CI/CD cycle
+
+.PHONY: build
+build:
+	gcloud builds submit --region ${REGION}  --tag ${REGISTRY}/chrome_crawler:${VERSION}
+
+
+.PHONY: publish
+publish:
+	docker tag ${DOCKERID}/${PROJECTNAME} ${REGISTRY}/${DOCKERID}/${PROJECTNAME}:$(VERSION)
+	docker push ${DOCKERID}/${PROJECTNAME}:$(VERSION)
+
+
+.PHONY: deploy
+deploy:
+	python3 scripts/deploy.py
 

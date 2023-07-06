@@ -24,6 +24,7 @@ WEB_PORT = 3000
 WEB_TIMEOUT = 150 # segs
 JWT_SECRET = my-secret-hash
 JWT_ALG = HS256
+PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium-browser
 ```
 
 If `JWT_ALG` is "ES512", then `JWT_SECRET` must contain the absolute or relative path to the public key:
@@ -31,6 +32,12 @@ If `JWT_ALG` is "ES512", then `JWT_SECRET` must contain the absolute or relative
 ```
 JWT_ALG = "ES512"
 JWT_SECRET = ".secrets/public.key"
+
+`PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` is set by default and is related to where Alpine install the chromiun browser. 
+This variable doesn't belong to playwright, and it is used becose playwright uses their own browser binaries, which are not compatible for alpine. 
+
+> ⚠️ In the future a Dockerfile.debian version could be provided. It requires a change in how the dockerfile is structured.
+
 ```
 ## API
 
@@ -162,9 +169,6 @@ JWT_SECRET = ".secrets/public.key"
     - `next` [string]: uri of the next page
     - `links` [List[{href:text}]]: uri of the next page
     - `screenshot` [string]: Base64 encoded image
-
-
-
 
 
 ### Playstore endpoints

@@ -32,6 +32,6 @@ ENV NODE_ENV="prod"
 ENV WEB_ADDR="0.0.0.0"
 COPY . .
 RUN yarn install --ignore-scripts
-RUN npx playwright install  
+# RUN npx playwright install  
 
 CMD ["node", "src/server.js"]
