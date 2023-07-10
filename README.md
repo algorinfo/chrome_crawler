@@ -41,7 +41,9 @@ This variable doesn't belong to playwright, and it is used becose playwright use
 
 ## API
 
-> ⚠️ New V4 endpoint, it uses Playwright instead of puppeteer
+> ⚠️ V3 and V4 deprecated
+
+> ⚠️ From V4 endpoint, it uses Playwright instead of puppeteer
 
 > ⚠️ V3 will be deprecated soon 
 
@@ -60,72 +62,35 @@ This variable doesn't belong to playwright, and it is used becose playwright use
 
 ### Chrome and axios endpoints
 
-- GET /v1/chrome
-  - Uses chrome to render the site
-  - Query Params: url
-  
-- GET /v2/chrome
-  - Uses chrome to render the site
-  - Query Params: url, screen
-  
-- POST /v2/chrome
-  - Uses chrome to render the site
-  - body params: url, ts, scroll, screenshot
- 
-- GET /v2/axios
-  - Uses axios to craw a site
-  - Query Params: url
-  
-- GET /v2/image
-  - Uses axios to get an image encoded as base64
-  - Query Params: url
- 
-- POST /v3/axios
-  - 200 if everything ok
-  - body
-    - url: string
-    - ts: number (in secs)
-    - screenshot: bool
-    - autoscroll: bool
-    - userAgent: string
-  
-- POST /v3/chrome
-  - 200 if everything ok
-  - body
-    - url: string
-    - ts: number (in secs)
-    - screenshot: bool
-    - autoscroll: bool
-    - userAgent: string
 
-- GET /v3/image
+- GET /v5/image
   - Uses axios to get an image encoded as base64
   - Query Params: url
 
-- POST /v4/chrome
+- POST /v5/chrome
   - 200 if everything ok
   - body
     - `url` [string]: 
     - `ts`: number (in secs)
     - `waitElement` [string | null]: Visible text of an element to wait
     - `screenshot` [bool]:  Take a screenshot of the fullpage
-    - `autoscroll`: bool (not used)
     - `headers`: not used
-    - `proxy` [object]: Configure a proxy to be used
-      - `server` [string]: required, without protocol
-      - `username` [string]: optional
-      - `password` [string]: optional
-    - `emulation` [object]: 
-      - `locale` [string]: default "en-US"
-      - `timezoneId`[string]: default "America/New_York"
-      - `isMobile` [bool]: default False
-      - `viewport` [object]: 
-        - `width` [number]: default 1280
-        - `height` [number]: default 720
-      - `geoEnabled` [bool]: default True, add geolocation to permissions
-      - `geolocation` [object]: (default New York)
-        - `longitude` [number]: default 40.6976312 
-        - `latitude` [number]: default -74.1444858
+    - `browser`[object]: 
+      - `proxy` [object]: Configure a proxy to be used
+        - `server` [string]: required, without protocol
+        - `username` [string]: optional
+        - `password` [string]: optional
+      - `emulation` [object]: 
+        - `locale` [string]: default "en-US"
+        - `timezoneId`[string]: default "America/New_York"
+        - `isMobile` [bool]: default False
+        - `viewport` [object]: 
+          - `width` [number]: default 1280
+          - `height` [number]: default 720
+        - `geoEnabled` [bool]: default True, add geolocation to permissions
+        - `geolocation` [object]: (default New York)
+          - `longitude` [number]: default 40.6976312 
+          - `latitude` [number]: default -74.1444858
   - response:
     - `content` [string]: Raw html of the response
     - `headers` [object]: not used
@@ -133,7 +98,7 @@ This variable doesn't belong to playwright, and it is used becose playwright use
     - `fullLoaded` [bool]: if the page was loaded completly
     - `screenshot` [string]: Base64 encoded image
 
-- POST /v4/axios
+- POST /v5/axios
   - 200 if everything ok
   - body
     - `url` [string]: 
@@ -147,27 +112,21 @@ This variable doesn't belong to playwright, and it is used becose playwright use
       - `username` [string]: optional
       - `password` [string]: optional
 
-- POST /v4/google-search
+- POST /v5/duckduckgo
   - 200 if everything ok
   - body
     - `text` [string]: a query to search in google
-    - `url` [string]: optional, the google's url to use. default: https://www.google.com
-    - `nextPage` [string|null]: Used to iterate over the google results
     - `ts` [number]: timeout (in secs)
-    - `waitElement` [string | null]: Not used
+    - `moreResults` [number]: How many click on moreResults it will do
     - `screenshot` [bool]:  Take and screenshot
-    - `autoscroll`: bool (not used)
-    - `headers` [any]: not used 
-    - `proxy` [object]: 
-      - `server` [string]: required
-      - `username` [string]: optional
-      - `password` [string]: optional
+    - `useCookies` [bool]: default True
+    - `browser` [object]: same thant chrome endpoint
   - response:
     - `query` [string]: Parsed query 
     - `content` [string]: Raw html of the response
     - `status` [number]: status code, 200 or 500
-    - `next` [string]: uri of the next page
     - `links` [List[{href:text}]]: uri of the next page
+    - `fullLoaded` [bool]: if the page was loaded completly
     - `screenshot` [string]: Base64 encoded image
 
 
