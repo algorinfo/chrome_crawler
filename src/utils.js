@@ -5,6 +5,8 @@ const util = require('util');
 const readFileAsync = util.promisify(fs.readFile);
 const writeFileAsync = util.promisify(fs.writeFile);
 
+const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-module.exports = {readFileAsync, writeFileAsync}
+
+module.exports = {readFileAsync, writeFileAsync, sleep}
 

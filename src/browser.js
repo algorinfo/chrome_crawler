@@ -1,7 +1,94 @@
+const Joi = require('joi');
 const {chromium} = require('playwright-extra');
 const stealthPlugin = require('puppeteer-extra-plugin-stealth');
-const { readFileAsync, writeFileAsync } = require('./utils');
-const { permissions } = require('google-play-scraper');
+const { sleep, readFileAsync, writeFileAsync } = require('./utils');
+// const { permissions } = require('google-play-scraper');
+const defaultTs =  process.env.WEB_TIMEOUT || 180
+
+const googleURL = "https://google.com"
+
+const proxyType =
+  {
+    server: Joi.string().required(),
+    username: Joi.string(),
+    password: Joi.string()
+  }
+
+
+// 40.6976312,-74.1444858 New York
+const geoType = {
+  longitude: Joi.number().default(40.6976312),
+  latitude: Joi.number().default(-74.1444858)
+}
+const viewPortType = {
+  width: Joi.number().default(1280),
+  height: Joi.number().default(720)
+}
+const emulationType =
+  {
+    locale: Joi.string().default("en-US"),
+    timezoneId: Joi.string().default("America/New_York"),
+    isMobile: Joi.boolean().default(false),
+    viewport: Joi.object().keys(viewPortType),
+    geoEnabled: Joi.boolean().default(false),
+    geolocation: Joi.object().keys(geoType).optional().allow(null),
+  }
+
+const emulationDefault = {
+  locale: "en-US",
+  timezoneId: "America/New_York",
+  isMobile: false,
+  viewport: { width: 1280, height: 720},
+  geoEnabled: false,
+  geolocation: {
+    longitude: 40.6976312,
+    latitude: -74.1444858
+  }
+}
+const defaultBrowserConf = {
+  headless: true,
+  emulation: emulationDefault,
+  proxy: null,
+
+}
+
+const defaultHeaders = {
+  "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/114.0"
+
+}
+
+const browserConfType = 
+  {
+    headless: Joi.boolean().default(true),
+    emulation: Joi.object().keys(emulationType).default(emulationDefault),
+    proxy: Joi.object().keys(proxyType).allow(null).default(null),
+  }
+
+const crawlPageType = Joi.object(
+  {
+    url: Joi.string().required(),
+    ts: Joi.number().default(defaultTs),
+    waitElement: Joi.string().optional().allow(null),
+    screenshot: Joi.bool().default(false),
+    headers: Joi.any().allow(null),
+    browser: Joi.object().keys(browserConfType).optional().allow(null).default(defaultBrowserConf),
+  }
+)
+
+
+
+async function parseCrawlPage(data){
+  // const emu =await emulationType.validateAsync(emulationDef);
+  if (data.browser === null || data.browser === undefined ){
+    data.browser = defaultBrowserConf
+  }
+  if (data.headers === null || data.headers === undefined ){
+    data.headers = defaultHeaders
+  }
+  const values = await crawlPageType.validateAsync(data);
+  //console.log(values)
+  return values
+}
 
 
 class Browser {
@@ -55,21 +142,46 @@ class Browser {
     return isTheEnd
   }
 
+  async gotoPage(page, url, timeout=30000, waitElement=null){
+    let fullLoaded = false
+    try{
+      await page.goto(url, {
+        timeout: timeout,
+        waitUntil: "load"
+      })
+      fullLoaded = true
+    }
+    catch {
+      fullLoaded = false
+      // console.log("Not full loaded")
+    }
+    try {
+      // await expect(page.getByTitle("Crónica en vivo")).toBeVisible({timeout: 15000})
+      // console.log(options.waitElement)
+      if (waitElement){
+        const loc = page.getByText(waitElement)
+        await loc.hover()
+      }
+    }catch {
+      // console.error("Error waiting")
+      fullLoaded = false
+    }
+    return fullLoaded
+
+  }
+
   async close(){
     await this.browser.close()
   }
 
 }
 
-async function crawlPage(options, headless=true){
-  console.log(options)
-  const response = {};
-  response["fullurl"] = options.url;
+async function setupBrowser(options) {
   const client = new Browser();
   if (options.proxy) {
-    await client.launch({proxy: options.proxy, headless: headless, executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined});
+    await client.launch({proxy: options.proxy, headless: options.headless, executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined});
   } else {
-    await client.launch({headless: headless, executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined});
+    await client.launch({headless: options.headless, executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined});
   }
   const permissions = []
   if (options.emulation.geoEnabled) {
@@ -86,34 +198,22 @@ async function crawlPage(options, headless=true){
   })
   await client.context.route('**.jpg', route => route.abort());
   await client.context.route('**.png', route => route.abort());
-  const page = await client.newPage();
-  let fullLoaded = false
-  try{
-    await page.goto(options.url, {
-      timeout: options.ts * 1000,
-      waitUntil: "load"
-    })
-    fullLoaded = true
-  }
-  catch {
-    fullLoaded = false
-    // console.log("Not full loaded")
-  }
-  try {
-    // await expect(page.getByTitle("Crónica en vivo")).toBeVisible({timeout: 15000})
-    // console.log(options.waitElement)
-    if (options.waitElement){
-      const loc = page.getByText(options.waitElement)
-      await loc.hover()
-    }
+  return client
 
-  }catch {
-    console.error("Error waiting")
-  }
+}
+
+
+async function crawlPage(task){
+  const response = {};
+  response["fullurl"] = task.url;
+  const client = await setupBrowser(task.browser)
+  
+  const page = await client.newPage();
+  const fullLoaded = await client.gotoPage(page, task.url, timeout=task.ts, waitElement=task.waitElement)
   let screenshot = null
   let statusCode = 200
   let content = null
-  if (options.screenshot === true) {
+  if (task.screenshot === true) {
     const buffer =  await page.screenshot({fullPage: true });
     screenshot = buffer.toString('base64')
   }
@@ -133,4 +233,20 @@ async function crawlPage(options, headless=true){
   return response
 }
 
-module.exports = {crawlPage, Browser};
+
+async function getContent(page) {
+  let content = null
+  let statusCode = 200
+  try{
+      content = await page.content()
+  } catch {
+    statusCode = 500
+  }
+  return {content, statusCode}
+
+}
+
+
+
+
+module.exports = {crawlPage,  Browser, parseCrawlPage, setupBrowser, browserConfType, defaultBrowserConf };

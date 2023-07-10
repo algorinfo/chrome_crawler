@@ -8,7 +8,7 @@ const Router = require("koa-router");
 const axios = require('axios');
 // Internal imports
 const { protected } = require("../middlewares/security.js");
-const { crawlPage } =  require("../browser.js");
+const { crawlPage, crawlDuckGo } =  require("../browser.js");
 const querystring = require("querystring");
 const cheerio = require('cheerio');
 
@@ -20,7 +20,8 @@ const version4 = new Router({
 });
 
 const defaultTs =  process.env.WEB_TIMEOUT || 180
-const googleDefault = "https://www.google.com"
+const googleDefault = "https://google.com"
+const duckDefault = "https://duckduckgo.com"
 
 const proxyConf =
   {
@@ -82,8 +83,20 @@ const searchTask = Joi.object(
     screenshot: Joi.bool().default(false),
     nextPage: Joi.string().optional().allow(null),
     headers: Joi.any().optional(),
-    proxy: Joi.object().keys(proxyConf).optional(),
+    proxy: Joi.object().keys(proxyConf).optional().allow(null),
     emulation: Joi.object().keys(emulationType),
+  }
+)
+
+const searchTask2 = Joi.object(
+  {
+    text: Joi.string().required(),
+    engine: Joi.string().default("duckduckgo"),
+    engineUrl: Joi.string().default(duckDefault),
+    moreResults: Joi.number().default(2),
+    ts: Joi.number().default(defaultTs),
+    screenshot: Joi.bool().default(false),
+    proxy: Joi.object().keys(proxyConf).optional().allow(null),
   }
 )
 
@@ -93,7 +106,7 @@ async function parseSearchTask(data){
     data.emulation = emulationDef
   }
   const values = await searchTask.validateAsync(data);
-  console.log(values)
+  //console.log(values)
   
   return values
 }
@@ -102,7 +115,7 @@ async function parseTask(data){
   if (data.emulation === null || data.emulation === undefined ){
     data.emulation = emulationDef
   }
-  console.log(data)
+  // console.log(data)
   const values = await crawlTask.validateAsync(data);
   
   return values
@@ -187,6 +200,46 @@ version4.post("/google-search", protected, async (ctx, next) => {
   if (nextHtml.text() !== ""){
     nextLink = $(nextHtml).attr("href")
   }
+
+  response["next"] = nextLink
+  response["screenshot"] = pageRsp["screenshot"]
+  response["content"] = pageRsp["content"]
+  response["status"] = pageRsp["status"]
+
+  ctx.status = 200;
+  ctx.body = response
+})
+
+version4.post("/duckduckgo-search", protected, async (ctx, next) => {
+  const data = ctx.request.body;
+  const options = await parseSearchTask(data);
+  const query = querystring.stringify({q: options.text})
+  const response = {}
+
+  if (options.nextPage) {
+    options["url"] = `${options.url}${options.nextPage}`
+  } else {
+
+    options["url"] = `${options.url}/?${query}`
+  }
+
+  const pageRsp = await crawlDuckGo(options, moreResults=2, headless=true)
+  response["query"] = query
+
+  const $ = cheerio.load(pageRsp["content"])
+  // const linksHtml = $("#search").find("a")
+
+  const searchHtml = $(".react-results--main")
+  const linksHtml = searchHtml.find("a")
+  // const linksHtml = $("a")
+  var links = []
+  for (const l of linksHtml){
+    let link = {href: $(l).attr("href"), text: $(l).text()}
+    links.push(link)
+  }
+  response["links"] = links
+  // const nextHtml = $("#pnnext")
+  let nextLink = null
 
   response["next"] = nextLink
   response["screenshot"] = pageRsp["screenshot"]

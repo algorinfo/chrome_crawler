@@ -33,11 +33,25 @@ class Emulation:
     geolocation: GeoLocation = GeoLocation()
 
 @dataclass
-class CrawlTask:
+class BrowserConf:
+    headless:bool=True
+    emulation: Optional[Emulation] = field(default_factory=Emulation)
+    proxy: Optional[Proxy] = None
+
+
+@dataclass
+class CrawlPage:
     url: str
     ts: int = 120
     waitElement: Optional[str] = None
     screenshot: bool = False
-    headers: Dict[str, Any] = field(default_factory=dict)
-    proxy: Optional[Proxy] = None
-    emulation: Optional[Emulation] = field(default_factory=Emulation)
+    headers: Optional[Dict[str, Any]] = None
+    browser: Optional[BrowserConf] = None
+
+@dataclass
+class SearchDuck:
+    text: str
+    ts: int = 120
+    moreResults = 1
+    screenshot: bool = False
+    browser: Optional[BrowserConf] = None

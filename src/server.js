@@ -7,11 +7,9 @@ const { jwtMiddleware} = require("./middlewares/security.js");
 const fs = require("fs");
 // Internal imports
 const prometheus = require("./middlewares/metrics.js");
-// const Crawler = require("./crawler.js");
-// const version1 = require("./version1.js");
-// const version2 = require("./version2.js");
-const version3 = require("./routes/version3.js");
-const version4 = require("./routes/version4.js");
+// const version3 = require("./routes/version3.js");
+// const version4 = require("./routes/version4.js");
+const version5 = require("./routes/version5.js");
 const playstore1 = require("./routes/playstore1.js");
 
 const app = new Koa();
@@ -43,10 +41,8 @@ router.get("/echo", (ctx, next) => {
 });
 
 app.use(router.routes());
-// app.use(version1.routes()); // no protected
-// app.use(version2.routes()); // no protected
-app.use(version3.routes());
-app.use(version4.routes());
+// app.use(version3.routes());
+app.use(version5.routes());
 app.use(playstore1.routes());
 console.log(`Listening on: ${addr}:${port}`);
 app.listen(port, addr);
