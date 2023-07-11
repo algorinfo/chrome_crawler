@@ -1,11 +1,10 @@
 const Joi = require('joi');
+const {nanoid} = require("nanoid/async")
 const {chromium} = require('playwright-extra');
 const stealthPlugin = require('puppeteer-extra-plugin-stealth');
 const { sleep, readFileAsync, writeFileAsync } = require('./utils');
 // const { permissions } = require('google-play-scraper');
 const defaultTs =  process.env.WEB_TIMEOUT || 180
-
-const googleURL = "https://google.com"
 
 const proxyType =
   {
@@ -48,8 +47,6 @@ const emulationDefault = {
 const defaultBrowserConf = {
   headless: true,
   emulation: emulationDefault,
-  proxy: null,
-
 }
 
 const defaultHeaders = {
@@ -70,6 +67,8 @@ const crawlPageType = Joi.object(
     ts: Joi.number().default(defaultTs),
     waitElement: Joi.string().optional().allow(null),
     screenshot: Joi.bool().default(false),
+    useCookies: Joi.bool().default(true),
+    cookieId:  Joi.string().allow(null).default(null),
     headers: Joi.any().allow(null),
     browser: Joi.object().keys(browserConfType).optional().allow(null).default(defaultBrowserConf),
   }
@@ -120,19 +119,19 @@ class Browser {
     return p
   }
 
-  async scrollDown(page, firstHeadElement, lastElement, limitIterations){
+  async scrollDown(page, firstRoleType, firstRoleName, lastElement, limitIterations){
     let isTheEnd = false
     let i = 0
     while (i < limitIterations || isTheEnd === false){
-      isTheEnd = await this.goDown(page, firstHeadElement, lastElement)
-      // await sleep(1000) 
+      isTheEnd = await this.goDown(page, firstRoleType, firstRoleName, lastElement)
+      await sleep(300) 
       i++
-      console.log(`(${i}) Scrolling down`)
+      // console.log(`(${i}) Scrolling down`)
     }
   }
 
-  async goDown(page, firstHeadElement, lastElement){
-    await page.getByRole('heading', {name: firstHeadElement}).press('PageDown');
+  async goDown(page, firstRoleType, firstRoleName, lastElement){
+    await page.getByRole(firstRoleType, { name: firstRoleName }).press('PageDown')
     let isTheEnd = true
     try {
       await expect(page.getByText(lastElement)).toBeVisible({timeout: 500});
@@ -205,10 +204,19 @@ async function setupBrowser(options) {
 
 async function crawlPage(task){
   const response = {};
-  response["fullurl"] = task.url;
+  let errorMsg = null;
   const client = await setupBrowser(task.browser)
   
   const page = await client.newPage();
+  if (task.useCookies) {
+    if (task.cookieId){
+      await client.loadCookies(`cookies/page.${task.cookieId}.json`)
+    } else {
+      task.cookieId = await nanoid(6)
+    }
+  }
+
+
   const fullLoaded = await client.gotoPage(page, task.url, timeout=task.ts, waitElement=task.waitElement)
   let screenshot = null
   let statusCode = 200
@@ -220,30 +228,24 @@ async function crawlPage(task){
     // await page.reload({ waitUntil: "networkidle"})
   try{
       content = await page.content()
-  } catch {
+  } catch (e) {
     statusCode = 500
+    errorMsg = e
   }
 
+  if (task.useCookies) {
+    await client.saveCookies(`cookies/page.${task.cookieId}.json`)
+  }
+
+  response["fullurl"] = task.url;
   response["content"] = content
   response["headers"] = {}
   response["status"] = statusCode
   response["screenshot"] = screenshot
   response["fullLoaded"] = fullLoaded
+  response["error"] = errorMsg
   await client.close()
   return response
-}
-
-
-async function getContent(page) {
-  let content = null
-  let statusCode = 200
-  try{
-      content = await page.content()
-  } catch {
-    statusCode = 500
-  }
-  return {content, statusCode}
-
 }
 
 

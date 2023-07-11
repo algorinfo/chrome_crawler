@@ -45,6 +45,8 @@ class CrawlPage:
     ts: int = 120
     waitElement: Optional[str] = None
     screenshot: bool = False
+    useCookies: bool = True
+    cookieId: Optional[str] = None
     headers: Optional[Dict[str, Any]] = None
     browser: Optional[BrowserConf] = None
 
@@ -52,6 +54,22 @@ class CrawlPage:
 class SearchDuck:
     text: str
     ts: int = 120
+    region: str = "ar-es"
     moreResults = 1
+    timeFilter: Optional[str] = None
     screenshot: bool = False
+    useCookies: bool = True
+    cookieId: Optional[str] = "default"
+    browser: Optional[BrowserConf] = None
+
+@dataclass
+class SearchGoogle:
+    text: str
+    ts: int = 120
+    region: str = "Argentina"
+    moreResults = 1
+    timeFilter: Optional[str] = None
+    screenshot: bool = False
+    useCookies: bool = True
+    cookieId: Optional[str] = "default"
     browser: Optional[BrowserConf] = None

@@ -589,3 +589,5 @@ dask-worker-space
 credentials.json
 todeploy
 .secrets/
+pages/
+cookies/

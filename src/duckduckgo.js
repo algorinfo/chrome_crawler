@@ -3,7 +3,9 @@ const cheerio = require('cheerio');
 const Joi = require('joi');
 const { Browser, setupBrowser, browserConfType, defaultBrowserConf } =  require("./browser.js");
 const { sleep } = require('./utils');
+const {nanoid} = require("nanoid/async")
 const duckURL = "https://duckduckgo.com"
+const settingsURL = `${duckURL}/settings`
 const defaultTs =  process.env.WEB_TIMEOUT || 180
 
 const crawlDuckGoType = Joi.object(
@@ -11,8 +13,11 @@ const crawlDuckGoType = Joi.object(
     text: Joi.string().required(),
     ts: Joi.number().default(defaultTs),
     moreResults: Joi.number().default(1),
+    region: Joi.string().default("ar-es"),
+    timeFilter: Joi.string().default(null).allow(null),
     screenshot: Joi.bool().default(false),
     useCookies: Joi.bool().default(true),
+    cookieId:  Joi.string().allow(null).default(null),
     browser: Joi.object().keys(browserConfType).optional().allow(null).default(defaultBrowserConf),
   }
 )
@@ -28,8 +33,20 @@ async function parseDuckGo(data){
 }
 
 
+/*
+Options for toolTime are:
+- Past year
+- Past month 
+- Past 24 hours
+- Past hour
+- Any time
+*/
+async function setTimeFilter(page, toolTime="Past year"){
+  await page.getByRole('link', { name: 'Any time ▼' }).click();
+  await page.getByRole('link', { name: toolTime }).click();
+}
 
-async function setCookiesSettings(region, lang="en_US", headless=true){
+async function setDuckGoRegionCookies(region, lang="en_US", headless=true){
   const client = new Browser();
   
   await client.launch({
@@ -48,8 +65,8 @@ async function setCookiesSettings(region, lang="en_US", headless=true){
   const fullLoaded = await client.gotoPage(page, "https://duckduckgo.com/settings")
 
   await setFormSettings(page, region, lang);
-  await client.saveCookies("cookies/duckduckgo.com.json")
-  console.log("=> saved cookies into cookies/duckduckgo.com.json")
+  await client.saveCookies("cookies/duckduckgo.com.default.json")
+  console.log("=> saved cookies into cookies/duckduckgo.com.default.json")
   const {content, statusCode} = await getContent(page)
   console.log("Status code: ", statusCode)
 
@@ -73,25 +90,34 @@ function extractLinks(content){
 
 async function setFormSettings(page, region, lang){
   await page.locator('#setting_kl').selectOption(region);
-  await page.locator('#setting_kad').selectOption(lang);
+  await page.locator('#setting_kad').selectOption('en_US');
   await page.getByRole('link', { name: 'Save and Exit' }).click();
 
 }
 
 async function crawlDuckGo(task){
   const response = {};
-  response["fullurl"] = task.url;
   const client = await setupBrowser(task.browser)
 
-  if (task.useCookies) {
-    await client.loadCookies("cookies/duckduckgo.com.json")
-  }
   const page = await client.newPage();
+  if (task.useCookies) {
+    if (task.cookieId){
+      await client.loadCookies(`cookies/duckduckgo.com.${task.cookieId}.json`)
+    } else {
+      task.cookieId = await nanoid(6)
+      await client.gotoPage(page, settingsURL)
+      await setFormSettings(page, task.region, 'en-US');
+      await client.saveCookies(`cookies/duckduckgo.com.${task.cookieId}.json`)
+    }
+  }
 
   const query = querystring.stringify({q: task.text})
   const url  =  `${duckURL}/?${query}`
-
+  response["fullurl"] = url;
   const fullLoaded = await client.gotoPage(page, url)
+  if (task.timeFilter){
+    await setTimeFilter(page, task.timeFilter)
+  }
   for (let i = 0; i < task.moreResults; i++){
       await page.getByRole('button', { name: 'More results' }).click();
       await sleep(900);
@@ -118,15 +144,18 @@ async function crawlDuckGo(task){
     links = extractLinks(content)
   }
 
+  response["query"] = task.text
   response["content"] = content
   response["headers"] = {}
   response["status"] = statusCode
   response["screenshot"] = screenshot
   response["fullLoaded"] = fullLoaded
   response["links"] = links
+  response["cookieId"] = task.cookieId
+  response["error"] = null
   await client.close()
   return response
 }
 
 
-module.exports = {crawlDuckGo, setCookiesSettings, parseDuckGo};
+module.exports = {crawlDuckGo, setDuckGoRegionCookies, parseDuckGo};

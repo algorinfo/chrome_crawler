@@ -6,7 +6,8 @@ const yargs = require("yargs/yargs");
 const { hideBin } = require("yargs/helpers");
 const fs = require("fs");
 const {crawlPage, parseCrawlPage} = require("./browser.js")
-const {crawlDuckGo, setCookiesSettings, parseDuckGo} = require("./duckduckgo.js")
+const {crawlDuckGo, setDuckGoRegionCookies, parseDuckGo} = require("./duckduckgo.js")
+const {crawlGoogle, parseGoogle} = require("./google.js")
 var jwt = require('jsonwebtoken');
 var privateKey = fs.readFileSync('.secrets/private.key');
 const minutes = 60 * 1000
@@ -31,6 +32,19 @@ async function crawlPageCMD(argv) {
 async function crawlDuckGoCMD(argv) {
   const task = await parseDuckGo({text: argv.text});
   const rsp = await crawlDuckGo(task)
+  if (argv.html ) {
+    // await writeFileAsync(`pages/${url}.html`)
+	  console.log(rsp.content);
+  } else {
+    console.log(JSON.stringify(rsp));
+	}
+}
+
+async function crawlGoogleCMD(argv) {
+  const task = await parseGoogle({text: argv.text});
+  task.cookieId = argv.cookie
+  task.browser.headless = argv.headless
+  const rsp = await crawlGoogle(task)
   if (argv.html ) {
     // await writeFileAsync(`pages/${url}.html`)
 	  console.log(rsp.content);
@@ -76,7 +90,7 @@ yargs(hideBin(process.argv)).command(
     yargs.positional("region", { describe: "region: ar-es" });
   },
   function(argv) {
-    setCookiesSettings(argv.region).then(
+    setDuckGoRegionCookies(argv.region).then(
       () => console.log("Finish")
     )
   }
@@ -106,4 +120,26 @@ yargs(hideBin(process.argv)).command(
   function(argv){
     crawlDuckGoCMD(argv).then()
   }
-).argv;
+).command(
+  "google [text]",
+  "crawl a search result from google",
+  (yargs) => {
+    yargs.positional("text", {describe: "text to search"});
+    yargs.option("html", {
+      describe: "only shows html, default=false",
+      default: false,
+  })
+   yargs.option("cookie", {
+      describe: "cookie id to be used, default=default",
+      default: "default",
+  })
+  yargs.option("headless", {
+      describe: "headless, default=true",
+      default: true,
+  })
+},
+  function(argv){
+    crawlGoogleCMD(argv).then()
+  }
+)
+.argv;
