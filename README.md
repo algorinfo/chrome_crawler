@@ -68,12 +68,14 @@ This variable doesn't belong to playwright, and it is used becose playwright use
   - Query Params: url
 
 - POST /v5/chrome
-  - 200 if everything ok
+  - 200 if everything ok, 500 if something went wrong
   - body
     - `url` [string]: 
     - `ts`: number (in secs)
     - `waitElement` [string | null]: Visible text of an element to wait
     - `screenshot` [bool]:  Take a screenshot of the fullpage
+    - `useCookies` [bool]: It will store and load cookies, default false
+    - `cookieId`: [string]: cookie id
     - `headers`: not used
     - `browser`[object]: 
       - `proxy` [object]: Configure a proxy to be used
@@ -91,15 +93,22 @@ This variable doesn't belong to playwright, and it is used becose playwright use
         - `geolocation` [object]: (default New York)
           - `longitude` [number]: default 40.6976312 
           - `latitude` [number]: default -74.1444858
-  - response:
+  - response 200:
+    - `fullurl` [string]: Raw html of the response
     - `content` [string]: Raw html of the response
     - `headers` [object]: not used
     - `status` [number]: status code, 200 or 500
     - `fullLoaded` [bool]: if the page was loaded completly
     - `screenshot` [string]: Base64 encoded image
+    - `error` [string]: any message error
+    - `cookieId` [string]: generated
+  - response 500:
+    - `error` [string]: message error
+
+
 
 - POST /v5/axios
-  - 200 if everything ok
+  - 200 if everything ok, 500 if something went wrong
   - body
     - `url` [string]: 
     - `ts`[number]: timeout (in secs)
@@ -113,21 +122,54 @@ This variable doesn't belong to playwright, and it is used becose playwright use
       - `password` [string]: optional
 
 - POST /v5/duckduckgo
-  - 200 if everything ok
+  - 200 if everything ok, 500 if something went wrong
   - body
     - `text` [string]: a query to search in google
     - `ts` [number]: timeout (in secs)
-    - `moreResults` [number]: How many click on moreResults it will do
-    - `screenshot` [bool]:  Take and screenshot
-    - `useCookies` [bool]: default True
-    - `browser` [object]: same thant chrome endpoint
-  - response:
+    - `moreResults` [number]: How many click on "More results" button it will do
+    - `region` [string]: "ar-es" by default. See [regions codes](#regions-codes)
+    - `screenshot` [bool]:  Take a screenshot of full rendered page
+    - `useCookies` [bool]: It will store and load cookies
+    - `cookieId`: [string]: cookie id
+    - `browser` [object]: same than chrome endpoint
+  - response 200:
     - `query` [string]: Parsed query 
+    - `fullurl` [string]: Fullurl
     - `content` [string]: Raw html of the response
+    - `headers` [object]: Empty
     - `status` [number]: status code, 200 or 500
     - `links` [List[{href:text}]]: uri of the next page
     - `fullLoaded` [bool]: if the page was loaded completly
     - `screenshot` [string]: Base64 encoded image
+    - `error` [string]: any message error
+    - `cookieId` [string]: generated
+  - response 500:
+    - `error` [string]: message error
+
+- POST /v5/google
+  - 200 if everything ok, 500 if something went wrong
+  - body
+    - `text` [string]: a query to search in google
+    - `ts` [number]: timeout (in secs)
+    - `moreResults` [number]: It will performs a "PgDown" actions for `moreResults` times.  
+    - `region` [string]: "ar-es" by default. See [regions codes](#regions-codes)
+    - `screenshot` [bool]:  Take and screenshot
+    - `useCookies` [bool]: default True
+    - `cookieId`: [string]: cookie id
+    - `browser` [object]: same than chrome endpoint
+  - response 200:
+    - `query` [string]: Parsed query 
+    - `fullurl` [string]: Fullurl
+    - `content` [string]: Raw html of the response
+    - `headers` [object]: Empty
+    - `status` [number]: status code, 200 or 500
+    - `links` [List[{href:text}]]: uri of the next page
+    - `fullLoaded` [bool]: if the page was loaded completly
+    - `screenshot` [string]: Base64 encoded image
+    - `error` [string]: any message error
+    - `cookieId` [string]: generated
+  - response 500:
+    - `error` [string]: message error
 
 
 ### Playstore endpoints
@@ -180,6 +222,23 @@ curl http://localhost:3000/v1/chrome?url=https://www.google.com/doodles/
 - **screen** param added for chrome's endpoint in the version 2 of the api. If is true, then an screenshot will be taken and encoded in base64. After that, could be decoded as a png file, throught the key `screenshot`. 
 - **/image** endpoint added to download images as base64.
 - **image.py** a script to test image endpoint.
+
+## Regions codes
+
+**duckduckgo**
+
+Check https://duckduckgo.com/settings
+
+Copy the value of the option:
+
+- For "All regions" the value is `wt-wt`
+- For "Argentina" the value is `ar-es`
+
+**google**:
+Check https://www.google.com/preferences
+Copy as the text shown in Region settings part:
+- For "Brazil", the value is `Brazil`
+- For "Agentina", the value is `Argentina`
 
 ## Resources
 
