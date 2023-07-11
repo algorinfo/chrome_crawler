@@ -16,9 +16,7 @@
     "playwright-extra": "^4.3.6",
     "prom-client": "^12.0.0",
     "prometheus-gc-stats": "^0.6.3",
-    "puppeteer": "10.2.0",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
-    "web-auto-extractor": "^1.0.17",
     "yargs": "^16.2.0"
   },
   "devDependencies": {
@@ -32,7 +30,12 @@
     "crawler": "./src/cmd.js"
   },
   "nodemonConfig": {
-    "ignore": ["pages/**", "cookies/**", "tests/*", "docs/*"],
+    "ignore": [
+      "pages/**",
+      "cookies/**",
+      "tests/*",
+      "docs/*"
+    ],
     "delay": 2500
   }
 }
