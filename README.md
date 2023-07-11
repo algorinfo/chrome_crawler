@@ -128,6 +128,7 @@ This variable doesn't belong to playwright, and it is used becose playwright use
     - `ts` [number]: timeout (in secs)
     - `moreResults` [number]: How many click on "More results" button it will do
     - `region` [string]: "ar-es" by default. See [regions codes](#regions-codes)
+    - `timeFilter` [string|null]: "Any Time", "Past day", "Past week", "Past month", "Past year". Null by default
     - `screenshot` [bool]:  Take a screenshot of full rendered page
     - `useCookies` [bool]: It will store and load cookies
     - `cookieId`: [string]: cookie id
@@ -153,6 +154,7 @@ This variable doesn't belong to playwright, and it is used becose playwright use
     - `ts` [number]: timeout (in secs)
     - `moreResults` [number]: It will performs a "PgDown" actions for `moreResults` times.  
     - `region` [string]: "ar-es" by default. See [regions codes](#regions-codes)
+    - `timeFilter` [string|null]: "Any Time", "Past hour", "Past 24 hours", "Past week", "Past month", "Past year". Null by default
     - `screenshot` [bool]:  Take and screenshot
     - `useCookies` [bool]: default True
     - `cookieId`: [string]: cookie id
