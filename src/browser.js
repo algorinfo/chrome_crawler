@@ -67,7 +67,7 @@ const crawlPageType = Joi.object(
     ts: Joi.number().default(defaultTs),
     waitElement: Joi.string().optional().allow(null),
     screenshot: Joi.bool().default(false),
-    useCookies: Joi.bool().default(true),
+    useCookies: Joi.bool().default(false),
     cookieId:  Joi.string().allow(null).default(null),
     headers: Joi.any().allow(null),
     browser: Joi.object().keys(browserConfType).optional().allow(null).default(defaultBrowserConf),
@@ -244,6 +244,7 @@ async function crawlPage(task){
   response["screenshot"] = screenshot
   response["fullLoaded"] = fullLoaded
   response["error"] = errorMsg
+  response["cookieId"] = task.cookieId
   await client.close()
   return response
 }
