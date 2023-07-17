@@ -95,7 +95,7 @@ router.post("/chrome", protected, async (ctx, next) => {
   let statusCode = 200
   try{
     const task = await parseCrawlPage(data)
-    rsp = await crawlPage(task)
+    rsp = await crawlPage(task, ctx.app.redis)
     statusCode = rsp["status"]
   } catch(e){
     statusCode = 500
@@ -113,7 +113,7 @@ router.post("/duckduckgo", protected, async (ctx, next) => {
   let statusCode = 200
   try{
     const task = await parseDuckGo(data)
-    rsp = await crawlDuckGo(task)
+    rsp = await crawlDuckGo(task, ctx.app.redis)
     statusCode = rsp["status"]
   } catch(e){
     statusCode = 500
@@ -130,7 +130,7 @@ router.post("/google", protected, async (ctx, next) => {
   let statusCode = 200
   try{
     const task = await parseGoogle(data)
-    rsp = await crawlGoogle(task)
+    rsp = await crawlGoogle(task, ctx.app.redis)
   } catch(e){
     statusCode = 500
     rsp["error"] =  e

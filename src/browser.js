@@ -94,7 +94,8 @@ async function parseCrawlPage(data){
 class Browser {
   browser; 
   context;
-  constructor(){
+  constructor(redis=null){
+    this.redis = redis
   }
   async launch(opts={}){
     chromium.use(stealthPlugin());
@@ -104,16 +105,31 @@ class Browser {
   async setContext(opts={}){
     this.context = await this.browser.newContext(opts);
   }
-  async loadCookies(path){
+  async loadCookies(key){
+    const content = await this.redis.get(key)
+    if (content !== null) {
+      const cookies = JSON.parse(content)
+      await this.context.addCookies(cookies)
+      return true
+    }
+    return false
+  }
+  async loadCookiesFs(path){
     const content = await readFileAsync(path, 'utf8')
     const cookies = JSON.parse(content)
     await this.context.addCookies(cookies)
 
   }
-  async saveCookies(path){
+  async saveCookiesFs(path){
     const cookies = await this.context.cookies()
     const cookieJson = JSON.stringify(cookies)
     await writeFileAsync(path, cookieJson)
+  }
+  // 2 hours by default
+  async saveCookies(key, ttl=7200){
+    const cookies = await this.context.cookies()
+    const cookieJson = JSON.stringify(cookies)
+    await this.redis.set(key, cookieJson, {EX: ttl})
   }
   async newPage(){
     const p = await this.context.newPage();
@@ -176,8 +192,8 @@ class Browser {
 
 }
 
-async function setupBrowser(options) {
-  const client = new Browser();
+async function setupBrowser(options, redis) {
+  const client = new Browser(redis);
   if (options.proxy) {
     await client.launch({proxy: options.proxy, headless: headless, executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined});
   } else {
@@ -203,15 +219,16 @@ async function setupBrowser(options) {
 }
 
 
-async function crawlPage(task){
+async function crawlPage(task, redis){
   const response = {};
   let errorMsg = null;
-  const client = await setupBrowser(task.browser)
+  const client = await setupBrowser(task.browser, redis)
   
   const page = await client.newPage();
   if (task.useCookies) {
     if (task.cookieId){
-      await client.loadCookies(`cookies/page.${task.cookieId}.json`)
+      // await client.loadCookies(`cookies/page.${task.cookieId}.json`)
+      await client.loadCookies(`cook.${task.cookieId}`)
     } else {
       task.cookieId = await nanoid(6)
     }
@@ -236,7 +253,7 @@ async function crawlPage(task){
   }
 
   if (task.useCookies) {
-    await client.saveCookies(`cookies/page.${task.cookieId}.json`)
+    await client.saveCookies(`cook.${task.cookieId}`)
   }
 
   response["fullurl"] = task.url;

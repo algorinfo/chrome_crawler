@@ -59,7 +59,7 @@ class SearchDuck:
     timeFilter: Optional[str] = None
     screenshot: bool = False
     useCookies: bool = True
-    cookieId: Optional[str] = "default"
+    cookieId: Optional[str] = None
     browser: Optional[BrowserConf] = None
 
 @dataclass
@@ -71,5 +71,5 @@ class SearchGoogle:
     timeFilter: Optional[str] = None
     screenshot: bool = False
     useCookies: bool = True
-    cookieId: Optional[str] = "default"
+    cookieId: Optional[str] = None
     browser: Optional[BrowserConf] = None

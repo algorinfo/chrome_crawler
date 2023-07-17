@@ -26,6 +26,7 @@ JWT_SECRET = my-secret-hash
 JWT_ALG = HS256
 PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium-browser
 HEADLESS = true 
+REDIS = redis://127.0.0.1:6379 # with localhost it tries ipv6
 ```
 
 If `JWT_ALG` is "ES512", then `JWT_SECRET` must contain the absolute or relative path to the public key:

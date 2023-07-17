@@ -28,6 +28,7 @@ async function parseDuckGo(data){
     data.browser = defaultBrowserConf
   }
   const values = await crawlDuckGoType.validateAsync(data);
+  console.error(values)
   //console.log(values)
   return values
 }
@@ -65,7 +66,7 @@ async function setDuckGoRegionCookies(region, lang="en_US", headless=true){
   const fullLoaded = await client.gotoPage(page, "https://duckduckgo.com/settings")
 
   await setFormSettings(page, region, lang);
-  await client.saveCookies("cookies/duckduckgo.com.default.json")
+  await client.saveCookies("cook.duckduckgo.com.default")
   console.log("=> saved cookies into cookies/duckduckgo.com.default.json")
   const {content, statusCode} = await getContent(page)
   console.log("Status code: ", statusCode)
@@ -95,19 +96,20 @@ async function setFormSettings(page, region, lang){
 
 }
 
-async function crawlDuckGo(task){
+async function crawlDuckGo(task, redis){
   const response = {};
-  const client = await setupBrowser(task.browser)
+  const client = await setupBrowser(task.browser, redis)
 
   const page = await client.newPage();
   if (task.useCookies) {
     if (task.cookieId){
-      await client.loadCookies(`cookies/duckduckgo.com.${task.cookieId}.json`)
+       await client.loadCookies(`cook.${task.cookieId}`)
+       console.error("COOKIE LOADED")
     } else {
       task.cookieId = await nanoid(6)
       await client.gotoPage(page, settingsURL)
       await setFormSettings(page, task.region, 'en-US');
-      await client.saveCookies(`cookies/duckduckgo.com.${task.cookieId}.json`)
+      await client.saveCookies(`cook.${task.cookieId}`)
     }
   }
 

@@ -56,6 +56,7 @@ def test_crawl_search_duck():
     data = r.json()
     assert r.status_code == 200
     assert len(data["links"]) > 0
+    assert data["cookieId"]
 
 def test_crawl_search_google():
     data = asdict(G_SEARCH)

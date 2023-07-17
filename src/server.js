@@ -4,6 +4,7 @@ const logger = require("koa-logger");
 const Router = require("koa-router");
 const bodyParser = require("koa-bodyparser");
 const { jwtMiddleware} = require("./middlewares/security.js");
+const { redisMiddleware} = require("./middlewares/redis.js");
 const fs = require("fs");
 // Internal imports
 const prometheus = require("./middlewares/metrics.js");
@@ -11,6 +12,8 @@ const prometheus = require("./middlewares/metrics.js");
 // const version4 = require("./routes/version4.js");
 const version5 = require("./routes/version5.js");
 const playstore1 = require("./routes/playstore1.js");
+
+const urlRedis = process.env.REDIS || "redis://127.0.0.1:6379"
 
 const app = new Koa();
 const router = new Router();
@@ -30,6 +33,7 @@ app.use(bodyParser());
 app.use(logger());
 app.use(prometheus.middleware({}));
 app.use(jwtMiddleware(secret, jwt_alg));
+app.use(redisMiddleware(urlRedis));
 
 // Routes
 router.get("/", (ctx, next) => {

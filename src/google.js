@@ -84,24 +84,24 @@ async function setTimeFilter(page, toolTime="Past year"){
   await page.getByRole('menuitemradio', { name: toolTime }).click();
 }
 
-async function crawlGoogle(task){
+async function crawlGoogle(task, redis){
   const response = {};
   let errorMsg = null
   // console.log("CRAWLING GOOGLE")
   task.browser.emulation.isMobile = true
   // task.moreResults = 10
-  const client = await setupBrowser(task.browser)
+  const client = await setupBrowser(task.browser, redis)
 
   const page = await client.newPage();
   if (task.useCookies) {
     if (task.cookieId){
-      await client.loadCookies(`cookies/google.com.${task.cookieId}.json`)
+      await client.loadCookies(`cook.${task.cookieId}`)
     } else {
       task.cookieId = await nanoid(6)
       await client.gotoPage(page, `${googleURL}/preferences`)
       await setFormSettings(page, task.region, "English");
       // await client.gotoPage(page, settingsURL)
-      await client.saveCookies(`cookies/google.com.${task.cookieId}.json`)
+      await client.saveCookies(`cook.${task.cookieId}`)
     }
   }
   // lr=lang_en&cr=countryAR
@@ -154,7 +154,7 @@ async function crawlGoogle(task){
     links = extractLinks(content)
   }
   if (task.useCookies) {
-    await client.saveCookies(`cookies/google.com.${task.cookieId}.json`)
+    await client.saveCookies(`cook.${task.cookieId}`)
   }
 
   response["fullurl"] = url;
