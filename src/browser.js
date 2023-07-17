@@ -5,6 +5,7 @@ const stealthPlugin = require('puppeteer-extra-plugin-stealth');
 const { sleep, readFileAsync, writeFileAsync } = require('./utils');
 // const { permissions } = require('google-play-scraper');
 const defaultTs =  process.env.WEB_TIMEOUT || 180
+const headless = process.env.HEADLESS || true
 
 const proxyType =
   {
@@ -45,7 +46,7 @@ const emulationDefault = {
   }
 }
 const defaultBrowserConf = {
-  headless: true,
+  headless: headless,
   emulation: emulationDefault,
 }
 
@@ -56,7 +57,7 @@ const defaultHeaders = {
 
 const browserConfType = 
   {
-    headless: Joi.boolean().default(true),
+    headless: Joi.boolean().default(headless),
     emulation: Joi.object().keys(emulationType).default(emulationDefault),
     proxy: Joi.object().keys(proxyType).allow(null).default(null),
   }
@@ -141,11 +142,11 @@ class Browser {
     return isTheEnd
   }
 
-  async gotoPage(page, url, timeout=30000, waitElement=null){
+  async gotoPage(page, url, timeout=30, waitElement=null){
     let fullLoaded = false
     try{
       await page.goto(url, {
-        timeout: timeout,
+        timeout: timeout * 1000,
         waitUntil: "load"
       })
       fullLoaded = true
@@ -161,7 +162,7 @@ class Browser {
         const loc = page.getByText(waitElement)
         await loc.hover()
       }
-    }catch {
+    }catch (e) {
       // console.error("Error waiting")
       fullLoaded = false
     }
@@ -178,9 +179,9 @@ class Browser {
 async function setupBrowser(options) {
   const client = new Browser();
   if (options.proxy) {
-    await client.launch({proxy: options.proxy, headless: options.headless, executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined});
+    await client.launch({proxy: options.proxy, headless: headless, executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined});
   } else {
-    await client.launch({headless: options.headless, executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined});
+    await client.launch({headless: headless, executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined});
   }
   const permissions = []
   if (options.emulation.geoEnabled) {
@@ -229,6 +230,7 @@ async function crawlPage(task){
   try{
       content = await page.content()
   } catch (e) {
+    console.error(e)
     statusCode = 500
     errorMsg = e
   }

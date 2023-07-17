@@ -11,7 +11,7 @@ HEADERS = {
 }
 CHROME = CrawlPage(
     url="https://algorinfo.com",
-    screenshot=True
+    screenshot=False
 )
 AXIOS = CrawlPage(
     url="http://httpbin.org/get",

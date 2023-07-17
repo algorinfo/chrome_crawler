@@ -46,6 +46,9 @@ router.post("/axios", protected, async (ctx, next) => {
   } catch(e){
     // console.log("error for " + options.url + " " + e);
     statusCode = 500
+    rsp["content"] = null
+    rsp["headers"] = {}
+    rsp["status"] = statusCode
     rsp["error"] = e;
   }
   ctx.status = statusCode;
@@ -57,10 +60,11 @@ router.get("/image", protected, async (ctx, next) => {
   // headers: { 'User-Agent': 'YOUR-SERVICE-NAME' }
   const url = ctx.request.query.url;
   let response = {};
+  let errorMsg = null
   response["fullurl"] = url;
   try{
     rsp = await axios.get(url,
-                                { timeout: ts * 1000,
+                                { timeout: 30 * 1000,
                                   headers: defaultHeaders,
                                   responseType: 'arraybuffer'});
 
@@ -68,6 +72,7 @@ router.get("/image", protected, async (ctx, next) => {
 
     response["headers"] = rsp.headers;
     response["status"] = rsp.status;
+    response["error"] = errorMsg
     
     ctx.status = 200;
     ctx.body = response;

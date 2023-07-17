@@ -25,6 +25,7 @@ WEB_TIMEOUT = 150 # segs
 JWT_SECRET = my-secret-hash
 JWT_ALG = HS256
 PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium-browser
+HEADLESS = true 
 ```
 
 If `JWT_ALG` is "ES512", then `JWT_SECRET` must contain the absolute or relative path to the public key:
