@@ -13,7 +13,6 @@ const prometheus = require("./middlewares/metrics.js");
 const version5 = require("./routes/version5.js");
 const playstore1 = require("./routes/playstore1.js");
 
-const urlRedis = process.env.REDIS || "redis://127.0.0.1:6379"
 
 const app = new Koa();
 const router = new Router();
@@ -22,6 +21,8 @@ const port = process.env.WEB_PORT || 3000;
 const addr = process.env.WEB_ADDR || "localhost";
 const jwt_secret = process.env.JWT_SECRET;
 const jwt_alg = process.env.JWT_ALG || "ES512";
+const urlRedis = process.env.REDIS || "redis://127.0.0.1:6379"
+const passRedis = process.env.REDIS_PASSWORD || undefined
 var secret = jwt_secret;
 if (jwt_alg === "ES512"){
   secret = fs.readFileSync(jwt_secret);
@@ -33,7 +34,7 @@ app.use(bodyParser());
 app.use(logger());
 app.use(prometheus.middleware({}));
 app.use(jwtMiddleware(secret, jwt_alg));
-app.use(redisMiddleware(urlRedis));
+app.use(redisMiddleware(urlRedis, password=passRedis));
 
 // Routes
 router.get("/", (ctx, next) => {

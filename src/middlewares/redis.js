@@ -1,12 +1,18 @@
 const { createClient } = require("redis")
 
 
-const redisMiddleware = function (redisUrl) {
+const redisMiddleware = function (redisUrl, passRedis) {
   return async function addToCtx(ctx, next) {
     try {
       if (ctx.app.redis === undefined){
-        console.log("==> Initializing Redis")
-        const redis = createClient({url: redisUrl})
+        let conf
+        if (passRedis !== undefined){
+          conf = {url: redisUrl, password: passRedis}
+        } else{
+          conf = {url: redisUrl}
+        }
+
+        const redis = createClient(conf)
         await redis.connect()
         ctx.app.redis = redis 
       }
