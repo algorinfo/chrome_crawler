@@ -45,9 +45,16 @@ router.post("/axios", protected, async (ctx, next) => {
     statusCode = rspAx.status
   } catch(e){
     // console.log("error for " + options.url + " " + e);
-    statusCode = 500
+    let headers = {}
+    if (e.response) {
+      statusCode = e.response.status
+      headers = e.response.headers
+    } else {
+      console.error(e)
+      statusCode = 500
+    }
     rsp["content"] = null
-    rsp["headers"] = {}
+    rsp["headers"] = headers
     rsp["status"] = statusCode
     rsp["error"] = e;
   }
