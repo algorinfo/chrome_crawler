@@ -28,10 +28,12 @@ ENV PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium-browser
 ENV CHROME_BIN=/usr/bin/chromium-browser
 ENV CHROME_PATH=/usr/lib/chromium/ 
 ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+ENV COOKIES_PATH=/app/data/cookies
 ENV NODE_ENV="prod"
 ENV WEB_ADDR="0.0.0.0"
 COPY . .
-RUN yarn install --ignore-scripts
+RUN yarn install --ignore-scripts \
+	&& mkdir -p /app/data/cookies
 # RUN npx playwright install  
 
 CMD ["node", "src/server.js"]
