@@ -35,14 +35,14 @@ def save_image(fp, encoded):
 
 def test_crawl_chrome():
     data = asdict(CHROME)
-    r = httpx.post(f"{SERVICE_URL}/v11/chrome", json=data, headers=HEADERS, timeout=120)
+    r = httpx.post(f"{SERVICE_URL}/v7/chrome", json=data, headers=HEADERS, timeout=120)
     jdata = json.loads(r.content) 
     assert r.status_code == 200
     assert "Information" in jdata["content"]
 
 def test_crawl_axios():
     data = asdict(AXIOS)
-    r = httpx.post(f"{SERVICE_URL}/v11/axios", json=data, headers=HEADERS, timeout=120)
+    r = httpx.post(f"{SERVICE_URL}/v7/axios", json=data, headers=HEADERS, timeout=120)
     data = r.json()
     jdata = json.loads(r.content) 
     assert "Mozilla" in jdata["content"]["headers"]["User-Agent"]
@@ -52,7 +52,7 @@ def test_crawl_axios():
 
 def test_crawl_search_duck():
     data = asdict(DUCK_SEARCH)
-    r = httpx.post(f"{SERVICE_URL}/v11/duckduckgo", json=data, headers=HEADERS, timeout=220)
+    r = httpx.post(f"{SERVICE_URL}/v7/duckduckgo", json=data, headers=HEADERS, timeout=220)
     data = r.json()
     assert r.status_code == 200
     # assert len(data["links"]) > 0
@@ -60,7 +60,7 @@ def test_crawl_search_duck():
 
 def test_crawl_search_google():
     data = asdict(G_SEARCH)
-    r = httpx.post(f"{SERVICE_URL}/v11/google", json=data, headers=HEADERS, timeout=220)
+    r = httpx.post(f"{SERVICE_URL}/v7/google", json=data, headers=HEADERS, timeout=220)
     data = r.json()
     assert r.status_code == 200
     assert len(data["links"]) > 0
