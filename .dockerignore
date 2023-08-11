@@ -122,3 +122,4 @@ deploy.toml
 poetry.lock
 .envrc
 .secrets/
+data/*
