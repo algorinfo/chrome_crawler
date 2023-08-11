@@ -12,7 +12,7 @@ const { crawlPage, parseCrawlPage } =  require("../browser6.js");
 const { crawlDuckGo, parseDuckGo } =  require("../duckduckgo.js");
 const { crawlGoogle, parseGoogle } =  require("../google.js");
 
-const version = 11;
+const version = 6;
 const COOKIES_PATH = process.env.COOKIES_PATH || "data/cookies"
 
 const router = new Router({
