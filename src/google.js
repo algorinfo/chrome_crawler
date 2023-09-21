@@ -196,7 +196,7 @@ async function crawlGoogle(task, cookiesPath){
   response["links"] = links
   response["cookieId"] = task.cookieId
   response["error"] = errorMsg
-  // await client.close()
+  await client.close()
   return response
 }
 
