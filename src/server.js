@@ -10,13 +10,13 @@ const fs = require("fs");
 const prometheus = require("./middlewares/metrics.js");
 // const version3 = require("./routes/version3.js");
 // const version4 = require("./routes/version4.js");
-const version5 = require("./routes/version5.js");
+// const version5 = require("./routes/version5.js");
+const version6 = require("./routes/version6.js");
 const playstore1 = require("./routes/playstore1.js");
 
 
 const app = new Koa();
 const router = new Router();
-// const ts = process.env.WEB_TIMEOUT || 150;
 const port = process.env.WEB_PORT || 3000;
 const addr = process.env.WEB_ADDR || "localhost";
 const jwt_secret = process.env.JWT_SECRET;
@@ -34,7 +34,8 @@ app.use(bodyParser());
 app.use(logger());
 app.use(prometheus.middleware({}));
 app.use(jwtMiddleware(secret, jwt_alg));
-app.use(redisMiddleware(urlRedis, password=passRedis));
+// app.use(redisMiddleware(urlRedis, password=passRedis));
+
 
 // Routes
 router.get("/", (ctx, next) => {
@@ -47,7 +48,7 @@ router.get("/echo", (ctx, next) => {
 
 app.use(router.routes());
 // app.use(version3.routes());
-app.use(version5.routes());
+app.use(version6.routes());
 app.use(playstore1.routes());
 console.log(`Listening on: ${addr}:${port}`);
 app.listen(port, addr);

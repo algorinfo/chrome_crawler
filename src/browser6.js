@@ -5,7 +5,12 @@ const stealthPlugin = require('puppeteer-extra-plugin-stealth');
 const { sleep, readFileAsync, writeFileAsync } = require('./utils');
 // const { permissions } = require('google-play-scraper');
 const defaultTs =  process.env.WEB_TIMEOUT || 180
-const headless = process.env.HEADLESS || true
+let headless = process.env.HEADLESS || "true"
+if (headless === "true"){
+  headless = true 
+}else{
+  headless = false
+}
 
 const proxyType =
   {
@@ -64,13 +69,23 @@ const browserConfType =
 
 const crawlPageType = Joi.object(
   {
+    // Valid formed url to open
     url: Joi.string().required(),
+    // Timeout in secs
     ts: Joi.number().default(defaultTs),
+    //  Visible text of an element to wait
     waitElement: Joi.string().optional().allow(null),
+    // Take a screenshot of the fullpage
     screenshot: Joi.bool().default(false),
+    // Save cookies for the domain of the url
     useCookies: Joi.bool().default(false),
+    // If ture, the browser will have a fresh start
+    cleanCookies: Joi.bool().default(false),
+    // Derecated
     cookieId:  Joi.string().allow(null).default(null),
+    // Headers used only for axios
     headers: Joi.any().allow(null),
+    // Browser configuration see BrowserConfType
     browser: Joi.object().keys(browserConfType).optional().allow(null).default(defaultBrowserConf),
   }
 )
@@ -94,8 +109,9 @@ async function parseCrawlPage(data){
 class Browser {
   browser; 
   context;
-  constructor(redis=null){
+  constructor(cookiesPath, redis=null){
     this.redis = redis
+    this.cookiesPath = cookiesPath
   }
   async launch(opts={}){
     chromium.use(stealthPlugin());
@@ -114,16 +130,23 @@ class Browser {
     }
     return false
   }
-  async loadCookiesFs(path){
-    const content = await readFileAsync(path, 'utf8')
-    const cookies = JSON.parse(content)
-    await this.context.addCookies(cookies)
+  async loadCookiesFs(key){
+    try{
+      const content = await readFileAsync(`${this.cookiesPath}/${key}`, 'utf8')
+      const cookies = JSON.parse(content)
+      await this.context.addCookies(cookies)
+    } catch {
+      await writeFileAsync(`${this.cookiesPath}/${key}`, JSON.stringify([]));
+    }
 
   }
-  async saveCookiesFs(path){
+  async saveCookiesFs(key){
     const cookies = await this.context.cookies()
     const cookieJson = JSON.stringify(cookies)
-    await writeFileAsync(path, cookieJson)
+    await writeFileAsync(`${this.cookiesPath}/${key}`, cookieJson)
+  }
+  async cleanCookiesFs(key){
+    await writeFileAsync(`${this.cookiesPath}/${key}`, JSON.stringify([]))
   }
 
   async debugContentPage(path, content){
@@ -196,8 +219,8 @@ class Browser {
 
 }
 
-async function setupBrowser(options, redis) {
-  const client = new Browser(redis);
+async function setupBrowser(options, cookiesPath) {
+  const client = new Browser(cookiesPath);
   if (options.proxy) {
     await client.launch({proxy: options.proxy, headless: headless, executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined});
   } else {
@@ -223,19 +246,18 @@ async function setupBrowser(options, redis) {
 }
 
 
-async function crawlPage(task, redis){
+async function crawlPage(task, cookiesPath){
   const response = {};
   let errorMsg = null;
-  const client = await setupBrowser(task.browser, redis)
+  const client = await setupBrowser(task.browser, cookiesPath)
   
   const page = await client.newPage();
+  const u = new URL(task.url)
   if (task.useCookies) {
-    if (task.cookieId){
-      // await client.loadCookies(`cookies/page.${task.cookieId}.json`)
-      await client.loadCookies(`cook.${task.cookieId}`)
-    } else {
-      task.cookieId = await nanoid(6)
+    if (task.cleanCookies) {
+      client.cleanCookies(u.hostname)
     }
+    await client.loadCookiesFs(u.hostname)
   }
 
 
@@ -257,7 +279,8 @@ async function crawlPage(task, redis){
   }
 
   if (task.useCookies) {
-    await client.saveCookies(`cook.${task.cookieId}`)
+    const u = new URL(task.url)
+    await client.saveCookiesFs(u.hostname)
   }
 
   response["fullurl"] = task.url;
@@ -267,12 +290,9 @@ async function crawlPage(task, redis){
   response["screenshot"] = screenshot
   response["fullLoaded"] = fullLoaded
   response["error"] = errorMsg
-  response["cookieId"] = task.cookieId
+  response["cookieId"] = null
   await client.close()
   return response
 }
-
-
-
 
 module.exports = {crawlPage,  Browser, parseCrawlPage, setupBrowser, browserConfType, defaultBrowserConf };

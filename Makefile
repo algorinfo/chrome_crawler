@@ -11,11 +11,12 @@ endef
 
 export USAGE
 .EXPORT_ALL_VARIABLES:
-VERSION := $(shell git describe --tags)
+# VERSION := $(shell git describe --tags)
+VERSION := $(shell cat .VERSION)
 BUILD := $(shell git rev-parse --short HEAD)
 PROJECTNAME=chrome_crawler
-DOCKERID=nuxion
-REGISTRY=us-central1-docker.pkg.dev/algorinfo99/docker-repo
+DOCKERID=docker-repo
+REGISTRY=us-central1-docker.pkg.dev/algorinfo99
 REGION=us-central1
 
 help:
@@ -44,24 +45,23 @@ registry:
 token:
 	./src/cmd.js jwt nuxion
 
-
-.PHONY: buld-local
-build-local:
-	docker build -t ${DOCKERID}/${PROJECTNAME} .
-	docker tag ${DOCKERID}/${PROJECTNAME} ${REGISTRY}/${DOCKERID}/${PROJECTNAME}:$(VERSION)
+.PHONY: test
+test:
+	pytest tests/
 
 
 ## Standard commands for CI/CD cycle
 
 .PHONY: build
-build:
-	gcloud builds submit --region ${REGION}  --tag ${REGISTRY}/chrome_crawler:${VERSION}
+build: 
+	docker build -t ${DOCKERID}/${PROJECTNAME} .
+	docker tag ${DOCKERID}/${PROJECTNAME} ${DOCKERID}/${PROJECTNAME}:${VERSION}
 
-
+# gcloud builds submit --region ${REGION}  --tag ${REGISTRY}/chrome_crawler:${VERSION}
 .PHONY: publish
 publish:
-	docker tag ${DOCKERID}/${PROJECTNAME} ${REGISTRY}/${DOCKERID}/${PROJECTNAME}:$(VERSION)
-	docker push ${DOCKERID}/${PROJECTNAME}:$(VERSION)
+	docker tag ${DOCKERID}/${PROJECTNAME}:$(VERSION) ${REGISTRY}/${DOCKERID}/${PROJECTNAME}:${VERSION}
+	docker push ${REGISTRY}/${DOCKERID}/${PROJECTNAME}:${VERSION}
 
 
 .PHONY: deploy

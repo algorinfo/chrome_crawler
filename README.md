@@ -13,6 +13,11 @@ Dev environment
 ```
 yarn start
 ```
+or 
+```
+make run
+```
+
 ### Docker
 
 A `Dockerfile` is provided which install chrome inside the container. 
@@ -26,9 +31,8 @@ JWT_SECRET = my-secret-hash
 JWT_ALG = HS256
 PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium-browser
 HEADLESS = true 
-REDIS = redis://127.0.0.1:6379 # with localhost it tries ipv6
+REDIS = redis://127.0.0.1:6379 # with localhost it tries ipv6, redis is disabled
 ```
-
 If `JWT_ALG` is "ES512", then `JWT_SECRET` must contain the absolute or relative path to the public key:
 
 ```
@@ -41,19 +45,96 @@ This variable doesn't belong to playwright, and it is used becose playwright use
 
 > ⚠️ In the future a Dockerfile.debian version could be provided. It requires a change in how the dockerfile is structured.
 
+## Versioning
+
+The project follows a [calendar version release](https://calver.org/)  as `YY.MM.DD_PATCH[-MODIFIER]`, where:
+
+  - YY short year: 23, 24..
+  - MM short month: 01, 02...
+  - DD Short day: 01, 02, 03
+  - PATCH: bug fix or changes 1, 2, 3
+  - MODIFIER: lts, rc0, rc2...
+
+As example, the version `23.08.10_2` means from the year 2023 of month August from day 10th, patch 0. 
+MODIFIER field is optional. 
+
 ## API
 
-> ⚠️ V3 and V4 deprecated
+### Entities
 
-> ⚠️ From V4 endpoint, it uses Playwright instead of puppeteer
+#### BrowserConfType
 
-> ⚠️ V3 will be deprecated soon 
+```
+const browserConfType = 
+  {
+    headless: Joi.boolean().default(headless),
+    emulation: Joi.object().keys(emulationType).default(emulationDefault),
+    proxy: Joi.object().keys(proxyType).allow(null).default(null),
+  }
+```
+**EmulationType**
+```
+const emulationType =
+  {
+    locale: Joi.string().default("en-US"),
+    timezoneId: Joi.string().default("America/New_York"),
+    isMobile: Joi.boolean().default(false),
+    viewport: Joi.object().keys(viewPortType),
+    geoEnabled: Joi.boolean().default(false),
+    geolocation: Joi.object().keys(geoType).optional().allow(null),
+  }
+```
+emulationDefault:
+```
+const emulationDefault = {
+  locale: "en-US",
+  timezoneId: "America/New_York",
+  isMobile: false,
+  viewport: { width: 1280, height: 720},
+  geoEnabled: false,
+  geolocation: {
+    longitude: 40.6976312,
+    latitude: -74.1444858
+  }
+}
+```
 
-> ⚠️ V1 and v2 of chrome&axios apis are disabled in the code
+**ProxyType**
+```
+const proxyType =
+  {
+    server: Joi.string().required(),
+    username: Joi.string(),
+    password: Joi.string()
+  }
 
-> ⚠️ Playstore API could be very inestable, for more information refer to
-> https://github.com/facundoolano/google-play-scraper
+```
 
+#### CrawlPageType
+```
+const crawlPageType = Joi.object(
+  {
+    // Valid formed url to open
+    url: Joi.string().required(),
+    // Timeout in secs
+    ts: Joi.number().default(defaultTs),
+    //  Visible text of an element to wait
+    waitElement: Joi.string().optional().allow(null),
+    // Take a screenshot of the fullpage
+    screenshot: Joi.bool().default(false),
+    // Save cookies for the domain of the url
+    useCookies: Joi.bool().default(false),
+    // If ture, the browser will have a fresh start
+    cleanCookies: Joi.bool().default(false),
+    // Derecated
+    cookieId:  Joi.string().allow(null).default(null),
+    // Headers used only for axios
+    headers: Joi.any().allow(null),
+    // Browser configuration see BrowserConfType
+    browser: Joi.object().keys(browserConfType).optional().allow(null).default(defaultBrowserConf),
+  }
+)
+```
 ### General endpoints
 
 - GET /
@@ -62,39 +143,22 @@ This variable doesn't belong to playwright, and it is used becose playwright use
 - GET /metrics
   - 200 prometheus stats
 
-### Chrome and axios endpoints
 
+### Axios enpoints
 
-- GET /v5/image
+- GET /v6/image
   - Uses axios to get an image encoded as base64
   - Query Params: url
 
-- POST /v5/chrome
+- POST /v6/axios
   - 200 if everything ok, 500 if something went wrong
-  - body
-    - `url` [string]: 
-    - `ts`: number (in secs)
-    - `waitElement` [string | null]: Visible text of an element to wait
-    - `screenshot` [bool]:  Take a screenshot of the fullpage
-    - `useCookies` [bool]: It will store and load cookies, default false
-    - `cookieId`: [string]: cookie id
-    - `headers`: not used
-    - `browser`[object]: 
-      - `proxy` [object]: Configure a proxy to be used
-        - `server` [string]: required, without protocol
-        - `username` [string]: optional
-        - `password` [string]: optional
-      - `emulation` [object]: 
-        - `locale` [string]: default "en-US"
-        - `timezoneId`[string]: default "America/New_York"
-        - `isMobile` [bool]: default False
-        - `viewport` [object]: 
-          - `width` [number]: default 1280
-          - `height` [number]: default 720
-        - `geoEnabled` [bool]: default True, add geolocation to permissions
-        - `geolocation` [object]: (default New York)
-          - `longitude` [number]: default 40.6976312 
-          - `latitude` [number]: default -74.1444858
+  - body: `CrawlPageType`
+  - notes: ProxyType not used in axios
+
+### Chrome Endpoint
+- POST /v6/chrome
+  - 200 if everything ok, 500 if something went wrong
+  - body: `CrawlPageType`
   - response 200:
     - `fullurl` [string]: Raw html of the response
     - `content` [string]: Raw html of the response
@@ -107,34 +171,37 @@ This variable doesn't belong to playwright, and it is used becose playwright use
   - response 500:
     - `error` [string]: message error
 
+### Duckduckgo Endpoint
 
+**CrawlDuckGoType**
+```
+const crawlDuckGoType = Joi.object(
+  {
+    // a query to search in duckduckgo.com
+    text: Joi.string().required(),
+    // timeout in secs
+    ts: Joi.number().default(defaultTs),
+    // How many clicks on "More Results"
+    moreResults: Joi.number().default(1),
+    // "ar-es" by default. 
+    region: Joi.string().default("ar-es"),
+    // "Any Time", "Past day", "Past week", "Past month", "Past year". Null by default
+    timeFilter: Joi.string().default(null).allow(null),
+    // Take a screenshot of full rendered page
+    screenshot: Joi.bool().default(false),
+    // It will store and load cookies
+    useCookies: Joi.bool().default(true),
+    // Deprecated
+    cookieId:  Joi.string().allow(null).default(null),
+    browser: Joi.object().keys(browserConfType).optional().allow(null).default(defaultBrowserConf),
+  }
+)
+```
+For regios codes, check see [regions codes](#regions-codes)
 
-- POST /v5/axios
+- POST /v6/duckduckgo
   - 200 if everything ok, 500 if something went wrong
-  - body
-    - `url` [string]: 
-    - `ts`[number]: timeout (in secs)
-    - `waitElement` [string | null]: Not used
-    - `screenshot` [bool]:  Not used
-    - `autoscroll`: bool (not used)
-    - `headers`: any, to be used with axios
-    - `proxy` [object]: **Not implemented right now**
-      - `server` [string]: required
-      - `username` [string]: optional
-      - `password` [string]: optional
-
-- POST /v5/duckduckgo
-  - 200 if everything ok, 500 if something went wrong
-  - body
-    - `text` [string]: a query to search in google
-    - `ts` [number]: timeout (in secs)
-    - `moreResults` [number]: How many click on "More results" button it will do
-    - `region` [string]: "ar-es" by default. See [regions codes](#regions-codes)
-    - `timeFilter` [string|null]: "Any Time", "Past day", "Past week", "Past month", "Past year". Null by default
-    - `screenshot` [bool]:  Take a screenshot of full rendered page
-    - `useCookies` [bool]: It will store and load cookies
-    - `cookieId`: [string]: cookie id
-    - `browser` [object]: same than chrome endpoint
+  - body `crawlDuckGoType`
   - response 200:
     - `query` [string]: Parsed query 
     - `fullurl` [string]: Fullurl
@@ -149,18 +216,41 @@ This variable doesn't belong to playwright, and it is used becose playwright use
   - response 500:
     - `error` [string]: message error
 
-- POST /v5/google
+
+### Google Endpoint
+
+**crawlGoogleType**
+```
+const crawlGoogleType = Joi.object(
+  {
+    // a query to search in google.com
+    text: Joi.string().required(),
+    // timeout in secs
+    ts: Joi.number().default(defaultTs),
+    // It will performs a "PgDown" actions for `moreResults` times. 
+    moreResults: Joi.number().default(1),
+    // region: Joi.string().default("countryAR"),
+    region: Joi.string().default("Argentina"),
+    // country 
+    cr: Joi.string().default("US"),
+    // interfaz lang
+    hl: Joi.string().default("en"),
+    // "Any Time", "Past hour", "Past 24 hours", "Past week", "Past month", "Past year". Null by default
+    timeFilter: Joi.string().default(null).allow(null),
+    // Take and screenshot
+    screenshot: Joi.bool().default(false),
+    // use cookies
+    useCookies: Joi.bool().default(true),
+    // deprecated
+    cookieId:  Joi.string().allow(null).default(null),
+    browser: Joi.object().keys(browserConfType).optional().allow(null).default(defaultBrowserConf),
+  }
+)
+```
+
+- POST /v6/google
   - 200 if everything ok, 500 if something went wrong
-  - body
-    - `text` [string]: a query to search in google
-    - `ts` [number]: timeout (in secs)
-    - `moreResults` [number]: It will performs a "PgDown" actions for `moreResults` times.  
-    - `region` [string]: "ar-es" by default. See [regions codes](#regions-codes)
-    - `timeFilter` [string|null]: "Any Time", "Past hour", "Past 24 hours", "Past week", "Past month", "Past year". Null by default
-    - `screenshot` [bool]:  Take and screenshot
-    - `useCookies` [bool]: default True
-    - `cookieId`: [string]: cookie id
-    - `browser` [object]: same than chrome endpoint
+  - body `crawlGoogleType`
   - response 200:
     - `query` [string]: Parsed query 
     - `fullurl` [string]: Fullurl
@@ -177,6 +267,9 @@ This variable doesn't belong to playwright, and it is used becose playwright use
 
 
 ### Playstore endpoints
+
+> ⚠️ Playstore API could be very inestable, for more information refer to
+> https://github.com/facundoolano/google-play-scraper
 
 - GET /v1/playstore/:appid 
   - Get app detail based on the appid
@@ -222,10 +315,6 @@ curl http://localhost:3000/v1/chrome?url=https://www.google.com/doodles/
 **screen is a optional param, any value  is taked as true**
 
 
-## Changelog
-- **screen** param added for chrome's endpoint in the version 2 of the api. If is true, then an screenshot will be taken and encoded in base64. After that, could be decoded as a png file, throught the key `screenshot`. 
-- **/image** endpoint added to download images as base64.
-- **image.py** a script to test image endpoint.
 
 ## Regions codes
 
@@ -243,6 +332,24 @@ Check https://www.google.com/preferences
 Copy as the text shown in Region settings part:
 - For "Brazil", the value is `Brazil`
 - For "Agentina", the value is `Argentina`
+
+## Changelog
+
+**2023-08-10** 
+- Restarting changelog from now. 
+- Main endpoints (chrome, axios, image, google and duckduck) will follow simple version schema: Breaking changes in the response or the payload for req/resp will imply a new version in the enpoint. 
+
+- [calendar version release](https://calver.org/)  adopted for the project. More detail in [versioning](#versioning), but the new format is: `YY.MM.DD_PATCH[-MODIFIER]`.  As example, this version will be: `23.08.10_0`  
+
+- Cookies are now per instance, stored locally. In version 5, cookies were shared cross instances using redis. Because instances could be hosted in different servers with different IPs and having requests with the same cookies from different IPS is not recommended. Instead, each instance store locally their cookies, which is aligned with how actually a browser works.
+
+- Duckduckgo parsing of links disabled by now.y
+- Google try first to get the search button using "Search" if it fails, it will try "Buscar"
+- A `HEADLESS` env added. If `false` it will open the browser. Useful for debugging.
+
+**Before**
+
+> ⚠️ From V4 endpoint, it uses Playwright instead of puppeteer
 
 ## Resources
 

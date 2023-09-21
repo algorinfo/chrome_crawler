@@ -1,7 +1,7 @@
 const querystring = require("querystring");
 const cheerio = require('cheerio');
 const Joi = require('joi');
-const { Browser, setupBrowser, browserConfType, defaultBrowserConf } =  require("./browser.js");
+const { Browser, setupBrowser, browserConfType, defaultBrowserConf } =  require("./browser6.js");
 const { sleep } = require('./utils');
 const {nanoid} = require("nanoid/async")
 const googleURL = "https://google.com"
@@ -10,14 +10,25 @@ const defaultTs =  process.env.WEB_TIMEOUT || 180
 
 const crawlGoogleType = Joi.object(
   {
+    // a query to search in google.com
     text: Joi.string().required(),
+    // timeout in secs
     ts: Joi.number().default(defaultTs),
+    // It will performs a "PgDown" actions for `moreResults` times. 
     moreResults: Joi.number().default(1),
     // region: Joi.string().default("countryAR"),
     region: Joi.string().default("Argentina"),
+    // country 
+    cr: Joi.string().default("US"),
+    // interfaz lang, it should be always "en" to work
+    hl: Joi.string().default("en"),
+    // "Any Time", "Past hour", "Past 24 hours", "Past week", "Past month", "Past year". Null by default
     timeFilter: Joi.string().default(null).allow(null),
+    // Take and screenshot
     screenshot: Joi.bool().default(false),
+    // use cookies
     useCookies: Joi.bool().default(true),
+    // deprecated
     cookieId:  Joi.string().allow(null).default(null),
     browser: Joi.object().keys(browserConfType).optional().allow(null).default(defaultBrowserConf),
   }
@@ -84,29 +95,31 @@ async function setTimeFilter(page, toolTime="Past year"){
   await page.getByRole('menuitemradio', { name: toolTime }).click();
 }
 
-async function crawlGoogle(task, redis){
+async function crawlGoogle(task, cookiesPath){
   const response = {};
   let errorMsg = null
   // console.log("CRAWLING GOOGLE")
   task.browser.emulation.isMobile = true
   // task.moreResults = 10
-  const client = await setupBrowser(task.browser, redis)
+  const client = await setupBrowser(task.browser, cookiesPath)
 
   const page = await client.newPage();
   if (task.useCookies) {
-    if (task.cookieId){
-      await client.loadCookies(`cook.${task.cookieId}`)
-    } else {
-      task.cookieId = await nanoid(6)
-      await client.gotoPage(page, `${googleURL}/preferences`)
-      await setFormSettings(page, task.region, "English");
+      const u = new URL(googleURL)
+      try {
+        await client.loadCookiesFs(u.hostname)
+      } catch {
+        // await client.gotoPage(page, `${googleURL}/preferences`)
+        // await setFormSettings(page, task.region, "English");
+        await client.saveCookiesFs(u.hostname)
+      }
+      
       // await client.gotoPage(page, settingsURL)
-      await client.saveCookies(`cook.${task.cookieId}`)
-    }
   }
   // lr=lang_en&cr=countryAR
-  const query = querystring.stringify({q: task.text, cr: task.region})
+  const query = querystring.stringify({q: task.text, cr: task.region, hl: task.hl})
   const url  =  `${googleURL}/search?${query}`
+  console.log("URL: ", url)
 
   const fullLoaded = await client.gotoPage(page, url)
   if (task.timeFilter){
@@ -118,14 +131,29 @@ async function crawlGoogle(task, redis){
   let i = 0
   while (i < task.moreResults & isTheEnd === false){
     // console.error("Iteration ", i, isTheEnd)
-    await page.getByRole("combobox", { name: "Search" }).press('PageDown')
+    let loc;
     try{
-      await expect(page.getByRole("button", {name: "More results"})).toBeVisible({timeout: 500});
-      await page.getByRole('button', { name: 'More results' }).click();
-      isTheEnd = true
-    } catch {
-      //console.error("more results")
 
+      // await expect(page.getByRole("combobox", { name: "Search" })).toBeVisible({timeout: 3000})
+      // await expect(page.getByRole("button", { name: "Search" })).toBeVisible({timeout: 3000})
+      console.log("Doing pagedown")
+      loc = await page.getByRole("button", { name: "Search" }).press("PageDown")
+    } catch{
+      // loc = await page.getByRole("button", { name: "Buscar" }).press("PageDown")
+      console.error("Failling looking for moreResults doing PageDown on Search button")
+      isTheEnd = true
+    }
+    try{
+      await expect(page.getByRole("button", {name: "More results"})).toBeVisible({timeout: 200});
+      await page.getByRole('button', { name: 'More results' }).click();
+    } catch {
+      try{
+        await expect(page.getByRole("link", {name: "Next"})).toBeVisible({timeout: 200});
+        await page.getByRole('link', { name: 'Next' }).click();
+      } catch {
+        isTheEnd = true
+        console.error("Error getting more results")
+      }
     }
     await sleep(200);
     i++
@@ -154,7 +182,8 @@ async function crawlGoogle(task, redis){
     links = extractLinks(content)
   }
   if (task.useCookies) {
-    await client.saveCookies(`cook.${task.cookieId}`)
+    const u = new URL(googleURL)
+    await client.saveCookiesFs(u.hostname)
   }
 
   response["fullurl"] = url;
@@ -167,7 +196,7 @@ async function crawlGoogle(task, redis){
   response["links"] = links
   response["cookieId"] = task.cookieId
   response["error"] = errorMsg
-  await client.close()
+  // await client.close()
   return response
 }
 

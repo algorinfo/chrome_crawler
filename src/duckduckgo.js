@@ -1,7 +1,7 @@
 const querystring = require("querystring");
 const cheerio = require('cheerio');
 const Joi = require('joi');
-const { Browser, setupBrowser, browserConfType, defaultBrowserConf } =  require("./browser.js");
+const { Browser, setupBrowser, browserConfType, defaultBrowserConf } =  require("./browser6.js");
 const { sleep } = require('./utils');
 const {nanoid} = require("nanoid/async")
 const duckURL = "https://duckduckgo.com"
@@ -10,13 +10,21 @@ const defaultTs =  process.env.WEB_TIMEOUT || 180
 
 const crawlDuckGoType = Joi.object(
   {
+    // a query to search in duckduckgo.com
     text: Joi.string().required(),
+    // timeout in secs
     ts: Joi.number().default(defaultTs),
+    // How many clicks on "More Results"
     moreResults: Joi.number().default(1),
+    // "ar-es" by default. 
     region: Joi.string().default("ar-es"),
+    // "Any Time", "Past day", "Past week", "Past month", "Past year". Null by default
     timeFilter: Joi.string().default(null).allow(null),
+    // Take a screenshot of full rendered page
     screenshot: Joi.bool().default(false),
+    // It will store and load cookies
     useCookies: Joi.bool().default(true),
+    // Deprecated
     cookieId:  Joi.string().allow(null).default(null),
     browser: Joi.object().keys(browserConfType).optional().allow(null).default(defaultBrowserConf),
   }
@@ -63,15 +71,12 @@ async function setDuckGoRegionCookies(region, lang="en_US", headless=true){
   await client.context.route('**.jpg', route => route.abort());
   await client.context.route('**.png', route => route.abort());
   const page = await client.newPage();
-  const fullLoaded = await client.gotoPage(page, "https://duckduckgo.com/settings")
+  const fullLoaded = await client.gotoPage(page, `${duckURL}/settings`)
 
   await setFormSettings(page, region, lang);
-  await client.saveCookies("cook.duckduckgo.com.default")
-  console.log("=> saved cookies into cookies/duckduckgo.com.default.json")
+  const u = new URL(duckURL)
+  await client.saveCookiesFs(u.hostname)
   const {content, statusCode} = await getContent(page)
-  console.log("Status code: ", statusCode)
-
-
   await client.close()
 
 }
@@ -80,7 +85,7 @@ function extractLinks(content){
   var links = []
   const $ = cheerio.load(content)
   const searchHtml = $(".react-results--main")
-  const lis = searchHtml.find("li")
+  const lis = searchHtml.find("article")
   var links = []
   for (const l of lis){
     let link = {href: $(l).find("a").attr("href"), text: $(l).text()}
@@ -96,21 +101,14 @@ async function setFormSettings(page, region, lang){
 
 }
 
-async function crawlDuckGo(task, redis){
+async function crawlDuckGo(task, cookiesPath){
   const response = {};
-  const client = await setupBrowser(task.browser, redis)
+  const client = await setupBrowser(task.browser, cookiesPath)
 
   const page = await client.newPage();
   if (task.useCookies) {
-    if (task.cookieId){
-       await client.loadCookies(`cook.${task.cookieId}`)
-       console.error("COOKIE LOADED")
-    } else {
-      task.cookieId = await nanoid(6)
-      await client.gotoPage(page, settingsURL)
-      await setFormSettings(page, task.region, 'en-US');
-      await client.saveCookies(`cook.${task.cookieId}`)
-    }
+    const u = new URL(duckURL)
+    await client.loadCookiesFs(u.hostname)
   }
 
   const query = querystring.stringify({q: task.text})
@@ -135,16 +133,14 @@ async function crawlDuckGo(task, redis){
     // await page.reload({ waitUntil: "networkidle"})
   try{
       content = await page.content()
+      // client.debugContentPage("tests/duckduckgo2.html", content)
   } catch {
     statusCode = 500
   }
-
-  // await page.getByText('Canada (en)').click();
-  // await page.getByText('Argentina', { exact: true }).click();
   var links = []
-  if (content){
-    links = extractLinks(content)
-  }
+  // if (content){
+  //  links = extractLinks(content)
+  // }
 
   response["query"] = task.text
   response["content"] = content
@@ -153,7 +149,7 @@ async function crawlDuckGo(task, redis){
   response["screenshot"] = screenshot
   response["fullLoaded"] = fullLoaded
   response["links"] = links
-  response["cookieId"] = task.cookieId
+  response["cookieId"] = null
   response["error"] = null
   await client.close()
   return response
