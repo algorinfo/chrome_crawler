@@ -146,17 +146,17 @@ const crawlPageType = Joi.object(
 
 ### Axios enpoints
 
-- GET /v11/image
+- GET /v6/image
   - Uses axios to get an image encoded as base64
   - Query Params: url
 
-- POST /v11/axios
+- POST /v6/axios
   - 200 if everything ok, 500 if something went wrong
   - body: `CrawlPageType`
   - notes: ProxyType not used in axios
 
 ### Chrome Endpoint
-- POST /v11/chrome
+- POST /v6/chrome
   - 200 if everything ok, 500 if something went wrong
   - body: `CrawlPageType`
   - response 200:
@@ -199,7 +199,7 @@ const crawlDuckGoType = Joi.object(
 ```
 For regios codes, check see [regions codes](#regions-codes)
 
-- POST /v5/duckduckgo
+- POST /v6/duckduckgo
   - 200 if everything ok, 500 if something went wrong
   - body `crawlDuckGoType`
   - response 200:
@@ -231,6 +231,10 @@ const crawlGoogleType = Joi.object(
     moreResults: Joi.number().default(1),
     // region: Joi.string().default("countryAR"),
     region: Joi.string().default("Argentina"),
+    // country 
+    cr: Joi.string().default("US"),
+    // interfaz lang
+    hl: Joi.string().default("en"),
     // "Any Time", "Past hour", "Past 24 hours", "Past week", "Past month", "Past year". Null by default
     timeFilter: Joi.string().default(null).allow(null),
     // Take and screenshot
@@ -244,7 +248,7 @@ const crawlGoogleType = Joi.object(
 )
 ```
 
-- POST /v11/google
+- POST /v6/google
   - 200 if everything ok, 500 if something went wrong
   - body `crawlGoogleType`
   - response 200:
@@ -337,7 +341,7 @@ Copy as the text shown in Region settings part:
 
 - [calendar version release](https://calver.org/)  adopted for the project. More detail in [versioning](#versioning), but the new format is: `YY.MM.DD_PATCH[-MODIFIER]`.  As example, this version will be: `23.08.10_0`  
 
-- Cookies are now per instance, stored locally. In version 5, cookies were shared cross instances using redis. Because instances could be hosted in different server with different IPs this practices is not recommended. Instead, each instance store locally the cookies, which is aligned with how actually a browser works.
+- Cookies are now per instance, stored locally. In version 5, cookies were shared cross instances using redis. Because instances could be hosted in different servers with different IPs and having requests with the same cookies from different IPS is not recommended. Instead, each instance store locally their cookies, which is aligned with how actually a browser works.
 
 - Duckduckgo parsing of links disabled by now.y
 - Google try first to get the search button using "Search" if it fails, it will try "Buscar"

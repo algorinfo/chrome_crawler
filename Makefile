@@ -45,6 +45,10 @@ registry:
 token:
 	./src/cmd.js jwt nuxion
 
+.PHONY: test
+test:
+	pytest tests/
+
 
 ## Standard commands for CI/CD cycle
 

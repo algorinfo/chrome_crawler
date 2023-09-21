@@ -18,6 +18,10 @@ const crawlGoogleType = Joi.object(
     moreResults: Joi.number().default(1),
     // region: Joi.string().default("countryAR"),
     region: Joi.string().default("Argentina"),
+    // country 
+    cr: Joi.string().default("US"),
+    // interfaz lang, it should be always "en" to work
+    hl: Joi.string().default("en"),
     // "Any Time", "Past hour", "Past 24 hours", "Past week", "Past month", "Past year". Null by default
     timeFilter: Joi.string().default(null).allow(null),
     // Take and screenshot
@@ -105,16 +109,17 @@ async function crawlGoogle(task, cookiesPath){
       try {
         await client.loadCookiesFs(u.hostname)
       } catch {
-        await client.gotoPage(page, `${googleURL}/preferences`)
-        await setFormSettings(page, task.region, "English");
+        // await client.gotoPage(page, `${googleURL}/preferences`)
+        // await setFormSettings(page, task.region, "English");
         await client.saveCookiesFs(u.hostname)
       }
       
       // await client.gotoPage(page, settingsURL)
   }
   // lr=lang_en&cr=countryAR
-  const query = querystring.stringify({q: task.text, cr: task.region})
+  const query = querystring.stringify({q: task.text, cr: task.region, hl: task.hl})
   const url  =  `${googleURL}/search?${query}`
+  console.log("URL: ", url)
 
   const fullLoaded = await client.gotoPage(page, url)
   if (task.timeFilter){
@@ -129,18 +134,26 @@ async function crawlGoogle(task, cookiesPath){
     let loc;
     try{
 
-      await expect(page.getByRole("combobox", { name: "Search" })).toBeVisible({timeout: 3000})
-      loc = await page.getByRole("combobox", { name: "Search" }).press("PageDown")
+      // await expect(page.getByRole("combobox", { name: "Search" })).toBeVisible({timeout: 3000})
+      // await expect(page.getByRole("button", { name: "Search" })).toBeVisible({timeout: 3000})
+      console.log("Doing pagedown")
+      loc = await page.getByRole("button", { name: "Search" }).press("PageDown")
     } catch{
-      loc = await page.getByRole("combobox", { name: "Buscar" }).press("PageDown")
+      // loc = await page.getByRole("button", { name: "Buscar" }).press("PageDown")
+      console.error("Failling looking for moreResults doing PageDown on Search button")
+      isTheEnd = true
     }
     try{
-      await expect(page.getByRole("button", {name: "More results"})).toBeVisible({timeout: 500});
+      await expect(page.getByRole("button", {name: "More results"})).toBeVisible({timeout: 200});
       await page.getByRole('button', { name: 'More results' }).click();
-      isTheEnd = true
     } catch {
-      //console.error("more results")
-
+      try{
+        await expect(page.getByRole("link", {name: "Next"})).toBeVisible({timeout: 200});
+        await page.getByRole('link', { name: 'Next' }).click();
+      } catch {
+        isTheEnd = true
+        console.error("Error getting more results")
+      }
     }
     await sleep(200);
     i++
@@ -183,7 +196,7 @@ async function crawlGoogle(task, cookiesPath){
   response["links"] = links
   response["cookieId"] = task.cookieId
   response["error"] = errorMsg
-  await client.close()
+  // await client.close()
   return response
 }
 
